@@ -84,22 +84,17 @@ content:
                 - { name: automatisch, label: Automatisch }
                 - { name: herbst_winter, label: Herbst / Winter }
                 - { name: fruehling_sommer, label: Frühling / Sommer }
-          - name: herbst_winter
-            label: Herbst / Winter
+          - name: artikel
+            label: Artikel
+            description: Jeder Artikel steht nur einmal hier. Gibt es ihn nur in einer Saison, «Marke (ganzes Jahr)» leer lassen und nur die Saison ausfüllen.
             type: object
             list:
-              collapsible: { collapsed: true, summary: "{artikel} – {marke}" }
+              collapsible: { collapsed: true, summary: "{artikel} – {marke}{herbst_winter} {fruehling_sommer}" }
             fields:
-              - { name: artikel, label: Artikel, type: string }
-              - { name: marke, label: Marke, type: string }
-          - name: fruehling_sommer
-            label: Frühling / Sommer
-            type: object
-            list:
-              collapsible: { collapsed: true, summary: "{artikel} – {marke}" }
-            fields:
-              - { name: artikel, label: Artikel, type: string }
-              - { name: marke, label: Marke, type: string }
+              - { name: artikel, label: Artikel, type: string, required: true }
+              - { name: marke, label: Marke (ganzes Jahr), type: string }
+              - { name: herbst_winter, label: Marke nur Herbst / Winter, description: Nur ausfüllen, wenn es im Herbst/Winter eine andere Marke ist., type: string }
+              - { name: fruehling_sommer, label: Marke nur Frühling / Sommer, description: Nur ausfüllen, wenn es im Frühling/Sommer eine andere Marke ist., type: string }
 
       - name: marken
         label: Marken

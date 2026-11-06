@@ -237,17 +237,20 @@ $hasHours = (bool) array_filter($week);
   .head p { margin: 0; color: var(--muted); max-width: 52ch; }
   @media (max-width: 760px) { .head { grid-template-columns: 1fr; gap: 16px; margin-bottom: 36px; } section.block { padding: 64px 0; } }
 
-  /* Sortiment */
-  .seasons { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--line); background: var(--paper); }
-  .season { padding: 40px; }
-  .season + .season { border-left: 1px solid var(--line); }
-  .season h3 { font-size: 1.7rem; margin-bottom: 6px; }
-  .season .state { font-size: .9rem; color: var(--accent); margin: 0 0 24px; }
-  .season ul { list-style: none; padding: 0; margin: 0; }
-  .season li { display: flex; justify-content: space-between; gap: 16px; padding: 14px 0; border-top: 1px solid var(--line); }
-  .season li span:last-child { color: var(--muted); font-size: .95rem; text-align: right; }
-  .season.off { color: var(--muted); }
-  @media (max-width: 760px) { .seasons { grid-template-columns: 1fr; } .season + .season { border-left: 0; border-top: 1px solid var(--line); } .season { padding: 28px 24px; } }
+  /* Sortiment: eine Liste; was nur in einer Saison gilt, trägt data-only und wird je nach Saison ausgeblendet */
+  .assortment { display: grid; grid-template-columns: 1fr 2fr; gap: 16px 48px; border: 1px solid var(--line); background: var(--paper); padding: 40px; }
+  .assortment[data-season="herbst_winter"] [data-only="fruehling_sommer"],
+  .assortment[data-season="fruehling_sommer"] [data-only="herbst_winter"] { display: none; }
+  .assortment .state { display: inline-block; font-size: .85rem; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: var(--accent); margin: 0 0 10px; }
+  .assortment h3 { font-size: 1.9rem; }
+  .assortment ul { list-style: none; padding: 0; margin: 0; }
+  .assortment li { display: flex; justify-content: space-between; gap: 16px; padding: 14px 0; border-top: 1px solid var(--line); }
+  .assortment li:last-child { border-bottom: 1px solid var(--line); }
+  .assortment li .brand { color: var(--muted); font-size: .95rem; text-align: right; }
+  .assortment .next { grid-column: 2; margin: 4px 0 0; font-size: .95rem; color: var(--muted); }
+  .assortment .next strong { font-weight: 500; color: var(--ink); }
+  .assortment .next[hidden] { display: none; }
+  @media (max-width: 760px) { .assortment { grid-template-columns: 1fr; padding: 28px 24px; } .assortment .next { grid-column: auto; } }
 
   /* Marken */
   .brands { display: flex; flex-wrap: wrap; gap: 6px 0; margin: 0; padding: 0; list-style: none; }
@@ -391,18 +394,21 @@ $hasHours = (bool) array_filter($week);
         <h2><?= $t('sortiment.titel') ?></h2>
         <p><?= $t('sortiment.einleitung') ?></p>
       </div>
-      <div class="seasons" data-current="<?= ms_e(ms_str($c, 'sortiment.aktuelle_saison') ?: 'automatisch') ?>">
-<?php foreach ($seasons as $key => [$label, $later]): $now = $key === $R['season']; ?>
-        <article class="season<?= $now ? '' : ' off' ?>" data-season="<?= $key ?>">
-          <h3><?= $label ?></h3>
-          <p class="state"><?= $now ? 'Jetzt im Laden' : $later ?></p>
-          <ul>
-<?php foreach (ms_list($c, "sortiment.$key") as $it): ?>
-            <li><span><?= ms_e($it['artikel'] ?? '') ?></span><span><?= ms_e($it['marke'] ?? '') ?></span></li>
+<?php $other = $R['season'] === 'herbst_winter' ? 'fruehling_sommer' : 'herbst_winter'; ?>
+      <div class="assortment" data-season="<?= $R['season'] ?>">
+        <div>
+          <p class="state">Jetzt im Laden</p>
+          <h3><?php foreach ($seasons as $key => [$label]): ?><span data-only="<?= $key ?>"><?= $label ?></span><?php endforeach; ?></h3>
+        </div>
+        <ul>
+<?php foreach (ms_sortiment($c) as $it):
+    $hw = $it['herbst_winter'];
+    $fs = $it['fruehling_sommer'];
+    $only = $hw === null ? 'fruehling_sommer' : ($fs === null ? 'herbst_winter' : ''); ?>
+          <li<?= $only ? ' data-only="' . $only . '"' : '' ?>><span class="art"><?= ms_e($it['artikel']) ?></span><?php if ($only): ?><span class="brand"><?= ms_e($it[$only]) ?></span><?php elseif ($hw === $fs): ?><span class="brand"><?= ms_e($hw) ?></span><?php else: ?><span class="brand" data-only="herbst_winter"><?= ms_e($hw) ?></span><span class="brand" data-only="fruehling_sommer"><?= ms_e($fs) ?></span><?php endif; ?></li>
 <?php endforeach; ?>
-          </ul>
-        </article>
-<?php endforeach; ?>
+        </ul>
+        <p class="next" data-next hidden></p>
       </div>
     </div>
   </section>
@@ -536,15 +542,26 @@ function currentSeason() {
 const SEASON_SHORT = { herbst_winter: 'Herbst/Winter', fruehling_sommer: 'Frühling/Sommer' };
 document.querySelectorAll('[data-season-short]').forEach(el => { el.textContent = SEASON_SHORT[currentSeason()]; });
 
-// Sortiment: aktuelle Saison hervorheben
-const seasons = document.querySelector('.seasons');
-if (seasons) {
-  const current = currentSeason();
-  seasons.querySelectorAll('.season').forEach(art => {
-    const key = art.dataset.season, isNow = key === current;
-    art.classList.toggle('off', !isNow);
-    art.querySelector('.state').textContent = isNow ? 'Jetzt im Laden' : (key === 'herbst_winter' ? 'Ab Herbst' : 'Ab Frühling');
-  });
+// Sortiment: aktuelle Saison zeigen, Abweichungen der anderen Saison kompakt darunter
+// («Ab Frühling: Schuhe von Galizio Torresi»), gebildet aus derselben Liste im HTML
+const assortment = document.querySelector('.assortment');
+if (assortment) {
+  const cur = currentSeason(), other = cur === 'herbst_winter' ? 'fruehling_sommer' : 'herbst_winter';
+  assortment.dataset.season = cur;
+  const diffs = [...assortment.querySelectorAll('li')].map(li => {
+    const art = li.querySelector('.art').textContent;
+    const brand = li.dataset.only === other ? li.querySelector('.brand') : li.querySelector(`.brand[data-only="${other}"]`);
+    if (!brand) return null;
+    return brand.textContent ? `${art} von ${brand.textContent}` : art;
+  }).filter(Boolean);
+  const next = assortment.querySelector('[data-next]');
+  next.textContent = '';
+  if (diffs.length) {
+    const label = document.createElement('strong');
+    label.textContent = other === 'fruehling_sommer' ? 'Ab Frühling: ' : 'Ab Herbst: ';
+    next.append(label, diffs.join(', '));
+  }
+  next.hidden = !diffs.length;
 }
 
 // Öffnungszeiten (aus content/site.json): Index 0 = Sonntag … 6 = Samstag

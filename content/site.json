@@ -16,17 +16,11 @@
     "titel": "Sortiment",
     "einleitung": "Unser Sortiment wird jahreszeitengetreu angepasst. Im Laden finden Sie die aktuelle Kollektion in Ihrer Grösse – und jemanden, der sich Zeit für Sie nimmt.",
     "aktuelle_saison": "automatisch",
-    "herbst_winter": [
-      { "artikel": "Anzüge", "marke": "Textura" },
-      { "artikel": "Hemden", "marke": "Bolzonella 1934" },
-      { "artikel": "Jeans", "marke": "Trussardi" },
-      { "artikel": "Schuhe", "marke": "Calpierre" }
-    ],
-    "fruehling_sommer": [
-      { "artikel": "Anzüge", "marke": "Textura" },
-      { "artikel": "Hemden", "marke": "Bolzonella 1934" },
-      { "artikel": "Jeans", "marke": "Trussardi" },
-      { "artikel": "Schuhe", "marke": "Galizio Torresi" }
+    "artikel": [
+      { "artikel": "Anzüge", "marke": "Textura", "herbst_winter": "", "fruehling_sommer": "" },
+      { "artikel": "Hemden", "marke": "Bolzonella 1934", "herbst_winter": "", "fruehling_sommer": "" },
+      { "artikel": "Jeans", "marke": "Trussardi", "herbst_winter": "", "fruehling_sommer": "" },
+      { "artikel": "Schuhe", "marke": "", "herbst_winter": "Calpierre", "fruehling_sommer": "Galizio Torresi" }
     ]
   },
   "marken": {

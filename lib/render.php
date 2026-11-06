@@ -149,6 +149,45 @@ function ms_paragraphs($text)
     return array_values(array_filter(array_map('trim', preg_split('/\n\s*\n/', (string) $text)), 'strlen'));
 }
 
+/**
+ * Sortiment als eine Liste: ['artikel' => …, 'herbst_winter' => Marke, 'fruehling_sommer' => Marke].
+ * Marke null = in dieser Saison nicht im Laden, '' = ohne Markenangabe.
+ * Liest auch die frühere Form mit zwei getrennten Listen (sortiment.herbst_winter / .fruehling_sommer).
+ */
+function ms_sortiment(array $c)
+{
+    $out = [];
+    foreach (ms_list($c, 'sortiment.artikel') as $it) {
+        $a = trim((string) ($it['artikel'] ?? ''));
+        if ($a === '') {
+            continue;
+        }
+        $m = trim((string) ($it['marke'] ?? ''));
+        $hw = trim((string) ($it['herbst_winter'] ?? ''));
+        $fs = trim((string) ($it['fruehling_sommer'] ?? ''));
+        if ($m === '' && ($hw === '') !== ($fs === '')) {
+            // nur in einer Saison
+            $out[] = ['artikel' => $a, 'herbst_winter' => $hw === '' ? null : $hw, 'fruehling_sommer' => $fs === '' ? null : $fs];
+        } else {
+            $out[] = ['artikel' => $a, 'herbst_winter' => $hw !== '' ? $hw : $m, 'fruehling_sommer' => $fs !== '' ? $fs : $m];
+        }
+    }
+    if ($out) {
+        return $out;
+    }
+    $by = [];
+    foreach (['herbst_winter', 'fruehling_sommer'] as $s) {
+        foreach (ms_list($c, "sortiment.$s") as $it) {
+            $a = trim((string) ($it['artikel'] ?? ''));
+            if ($a !== '') {
+                $by[$a] = $by[$a] ?? ['artikel' => $a, 'herbst_winter' => null, 'fruehling_sommer' => null];
+                $by[$a][$s] = trim((string) ($it['marke'] ?? ''));
+            }
+        }
+    }
+    return array_values($by);
+}
+
 function ms_season_now(array $c)
 {
     $s = ms_str($c, 'sortiment.aktuelle_saison');
@@ -302,12 +341,16 @@ function ms_llms(array $c, $base)
     if ($x = ms_str($c, 'sortiment.einleitung')) {
         $out .= $line($x) . "\n\n";
     }
+    $sortiment = ms_sortiment($c);
     foreach (['herbst_winter' => 'Herbst / Winter', 'fruehling_sommer' => 'Frühling / Sommer'] as $k => $label) {
-        $items = array_map(function ($it) use ($line) {
-            $a = $line($it['artikel'] ?? '');
-            $b = $line($it['marke'] ?? '');
-            return $b !== '' ? "$a ($b)" : $a;
-        }, ms_list($c, "sortiment.$k"));
+        $items = [];
+        foreach ($sortiment as $it) {
+            if ($it[$k] !== null) {
+                $a = $line($it['artikel']);
+                $b = $line($it[$k]);
+                $items[] = $b !== '' ? "$a ($b)" : $a;
+            }
+        }
         if ($items) {
             $out .= "- $label: " . implode(', ', $items) . "\n";
         }

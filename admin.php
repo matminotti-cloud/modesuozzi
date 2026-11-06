@@ -47,7 +47,12 @@ function f($name, $label, $type, $opt = [])
     return ['name' => $name, 'label' => $label, 'type' => $type] + $opt;
 }
 
-$artikel = [f('artikel', 'Artikel', 'string'), f('marke', 'Marke', 'string')];
+$artikel = [
+    f('artikel', 'Artikel', 'string', ['required' => true]),
+    f('marke', 'Marke (ganzes Jahr)', 'string'),
+    f('herbst_winter', 'Marke nur Herbst / Winter', 'string', ['help' => 'Nur ausfüllen, wenn es im Herbst/Winter eine andere Marke ist.']),
+    f('fruehling_sommer', 'Marke nur Frühling / Sommer', 'string', ['help' => 'Nur ausfüllen, wenn es im Frühling/Sommer eine andere Marke ist.']),
+];
 
 $SCHEMA = [
     'seo' => ['label' => 'Allgemein', 'fields' => [
@@ -70,8 +75,8 @@ $SCHEMA = [
             'options' => ['automatisch' => 'Automatisch', 'herbst_winter' => 'Herbst / Winter', 'fruehling_sommer' => 'Frühling / Sommer'],
             'help' => '„Automatisch“ = März–August Frühling/Sommer, September–Februar Herbst/Winter. Gilt auch für den Hinweis „Neu im Schaufenster“ unter dem Titelbild.',
         ]),
-        f('herbst_winter', 'Herbst / Winter', 'list', ['fields' => $artikel, 'add' => 'Artikel hinzufügen']),
-        f('fruehling_sommer', 'Frühling / Sommer', 'list', ['fields' => $artikel, 'add' => 'Artikel hinzufügen']),
+        f('artikel', 'Artikel', 'list', ['fields' => $artikel, 'add' => 'Artikel hinzufügen',
+            'help' => 'Jeder Artikel steht nur einmal hier. Gibt es ihn nur in einer Saison, «Marke (ganzes Jahr)» leer lassen und nur die Saison ausfüllen.']),
     ]],
     'marken' => ['label' => 'Marken', 'fields' => [
         f('titel', 'Überschrift', 'string'),
