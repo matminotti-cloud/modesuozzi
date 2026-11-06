@@ -147,6 +147,21 @@ content:
             label: Zitat (optional)
             type: string
 
+      - name: rundgang
+        label: Virtueller Rundgang
+        type: object
+        fields:
+          - name: titel
+            label: Überschrift
+            type: string
+          - name: text
+            label: Einleitung
+            type: text
+          - name: link
+            label: Link aus Google Maps
+            description: In Google Maps das 360°-Foto des Ladens öffnen und den Link aus der Adresszeile hier einfügen. Leer lassen, um den Rundgang auszublenden.
+            type: string
+
       - name: besuch
         label: Besuch, Kontakt & Öffnungszeiten
         type: object

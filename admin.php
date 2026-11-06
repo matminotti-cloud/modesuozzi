@@ -26,7 +26,7 @@ const KEEP_BACKUPS   = 30;
 const MAX_UPLOAD     = 8 * 1024 * 1024;
 const SESSION_IDLE   = 2 * 3600;
 const MAX_ATTEMPTS   = 5;    // Fehlversuche pro Adresse in 15 Minuten
-const GLOBAL_MAX     = 100;  // Fehlversuche insgesamt in 15 Minuten (gilt nicht für bekannte Geräte)
+const GLOBAL_MAX     = 30;   // Fehlversuche insgesamt in 15 Minuten (gilt nicht für bekannte Geräte)
 const DEVICE_DAYS    = 90;   // so lange gilt ein Gerät nach erfolgreicher Anmeldung als bekannt
 const DEVICE_COOKIE  = 'ms_admin_device';
 const LOCK_SECONDS   = 15 * 60;
@@ -85,6 +85,11 @@ $SCHEMA = [
         f('bildunterschrift', 'Bildunterschrift', 'string'),
         f('text', 'Text', 'text', ['rows' => 7, 'help' => 'Absätze mit einer Leerzeile trennen.']),
         f('zitat', 'Zitat (optional)', 'string'),
+    ]],
+    'rundgang' => ['label' => 'Virtueller Rundgang', 'fields' => [
+        f('titel', 'Überschrift', 'string'),
+        f('text', 'Einleitung', 'text', ['rows' => 2]),
+        f('link', 'Link aus Google Maps', 'url', ['max' => 3000, 'help' => 'In Google Maps das 360°-Foto des Ladens öffnen und den Link aus der Adresszeile hier einfügen. Leer lassen, um den Rundgang auszublenden.']),
     ]],
     'besuch' => ['label' => 'Besuch & Kontakt', 'fields' => [
         f('titel', 'Überschrift', 'string'),
@@ -253,8 +258,10 @@ function client_key()
             $ip = (string) inet_ntop(substr($bin, 12));      // IPv4-mapped (::ffff:a.b.c.d) oder NAT64 (64:ff9b::/96)
         } elseif (substr($bin, 0, 2) === "\x20\x02") {
             $ip = (string) inet_ntop(substr($bin, 2, 4));    // 6to4 (2002::/16)
-        } elseif ($head12 === str_repeat("\0", 12) || substr($bin, 0, 4) === "\x20\x01\x00\x00") {
-            $ip = bin2hex($bin);                             // IPv4-kompatibel bzw. Teredo: ganze Adresse
+        } elseif ($head12 === str_repeat("\0", 12)) {
+            $ip = (string) inet_ntop(substr($bin, 12));      // IPv4-kompatibel (::a.b.c.d)
+        } elseif (substr($bin, 0, 4) === "\x20\x01\x00\x00") {
+            $ip = (string) inet_ntop(substr($bin, 12) ^ "\xff\xff\xff\xff"); // Teredo: Client-IPv4 (invertiert gespeichert)
         } else {
             $ip = bin2hex(substr($bin, 0, 8)) . '::/64';     // natives IPv6: ganzes /64-Netz zählt als eine Adresse
         }
@@ -371,7 +378,7 @@ function clean_value(array $f, $raw, $old, array &$errors, $where)
             $raw = array_filter(is_array($raw) ? $raw : [], 'is_string');
             return array_values(array_intersect(DAYS, $raw));
         case 'url':
-            $s = one_line($raw, 500);
+            $s = one_line($raw, $f['max'] ?? 500);
             if ($s === '') {
                 return '';
             }

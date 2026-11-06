@@ -55,6 +55,11 @@
     "text": "Seit 55 Jahren kleiden wir Männer aus Uster und dem Zürcher Oberland ein – an der Zentralstrasse 1, direkt am Sternenplatz.\n\nAls Familiengeschäft setzen wir auf italienische Qualität, ehrliche Beratung und Kundinnen und Kunden, die immer wieder kommen.",
     "zitat": "„Wir freuen uns auf Ihren Besuch!“"
   },
+  "rundgang": {
+    "titel": "Virtueller Rundgang",
+    "text": "Schauen Sie sich schon vorab in unserem Laden um: ziehen, um sich umzusehen – klicken, um weiterzugehen.",
+    "link": "https://www.google.com/maps/place/Herrenmode+V.+Suozzi/@47.3477735,8.7182642,3a,75y,90t/data=!3m8!1e2!3m6!1sCIHM0ogKEICAgID--_rgQA!2e10!3e12!6shttps:%2F%2Flh3.googleusercontent.com%2Fgrass-cs%2FAABkmLe4aUknSY6DZBpIw0v1PWxwy5Ofhf4ozQ25qxyuFsBOSwWF4kZB5MwPtEz4znZlkv8voMFaOZuJB1TxgfWqLEUmt6D_m836xNj_CK5x7bBmV48yImmukGF_OJtr9sNXXXVfLlEy%3Dw152-h86-k-no!7i4208!8i2368!4m7!3m6!1s0x479aa4af4f16cae9:0x342baa03f4c75ecc!8m2!3d47.3477735!4d8.7182642!10e5!16s%2Fg%2F1tdfgnrl"
+  },
   "besuch": {
     "titel": "Besuch",
     "einleitung": "Sie finden uns im Zentrum von Uster, wenige Gehminuten vom Bahnhof.",
