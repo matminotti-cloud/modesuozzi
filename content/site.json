@@ -1,0 +1,77 @@
+{
+  "seo": {
+    "titel": "Mode Suozzi – Herrenmode am Sternenplatz in Uster",
+    "beschreibung": "Mode Suozzi, Zentralstrasse 1, 8610 Uster: italienische Herrenmode seit 55 Jahren. Anzüge, Hemden, Strick, Jeans und Schuhe von Pal Zileri, Paul & Shark, Gran Sasso, Trussardi und mehr.",
+    "testversion": true
+  },
+  "hero": {
+    "oberzeile": "Seit 55 Jahren am Sternenplatz",
+    "titel": "Italienische Herrenmode in Uster.",
+    "text": "Anzüge, Hemden, Strick und Schuhe von ausgewählten Marken – mit persönlicher Beratung im Familiengeschäft.",
+    "bild": "/images/schaufenster-abend.webp",
+    "bild_alt": "Beleuchtetes Schaufenster von Mode Suozzi am Abend, mit Anzügen, Jacken und Schuhen",
+    "hinweis_titel": "Beachten Sie unser Herbstfenster!",
+    "hinweis_text": "Wir freuen uns auf Ihren Besuch."
+  },
+  "sortiment": {
+    "titel": "Sortiment",
+    "einleitung": "Unser Sortiment wird jahreszeitengetreu angepasst. Im Laden finden Sie die aktuelle Kollektion in Ihrer Grösse – und jemanden, der sich Zeit für Sie nimmt.",
+    "aktuelle_saison": "automatisch",
+    "herbst_winter": [
+      { "artikel": "Anzüge", "marke": "Textura" },
+      { "artikel": "Hemden", "marke": "Bolzonella 1934" },
+      { "artikel": "Jeans", "marke": "Trussardi" },
+      { "artikel": "Schuhe", "marke": "Calpierre" }
+    ],
+    "fruehling_sommer": [
+      { "artikel": "Anzüge", "marke": "Textura" },
+      { "artikel": "Hemden", "marke": "Bolzonella 1934" },
+      { "artikel": "Jeans", "marke": "Trussardi" },
+      { "artikel": "Schuhe", "marke": "Galizio Torresi" }
+    ]
+  },
+  "marken": {
+    "titel": "Unsere Marken",
+    "einleitung": "Vorwiegend italienische Häuser, mit denen wir seit Jahren zusammenarbeiten.",
+    "liste": [
+      { "name": "Pal Zileri", "link": "https://www.palzileri.com" },
+      { "name": "Paul & Shark", "link": "https://www.paulshark.com" },
+      { "name": "Gran Sasso", "link": "https://www.gransasso.com" },
+      { "name": "Trussardi", "link": "https://www.trussardi.com/" },
+      { "name": "Bolzonella", "link": "http://www.bolzonella1934.it" },
+      { "name": "Brax", "link": "https://www.brax.com/de/ch/index.html" },
+      { "name": "Aldo Brue", "link": "https://www.cityschuh.com/Herren/" },
+      { "name": "Mabrun", "link": "http://www.mabrun.it" },
+      { "name": "Green Coast", "link": "http://www.greencoast.it/" },
+      { "name": "Galizio Torresi", "link": "http://www.galiziotorresi.it" },
+      { "name": "Calpierre", "link": "http://www.calpierre.it" }
+    ]
+  },
+  "ueber_uns": {
+    "titel": "Über uns",
+    "bild": "https://www.modesuozzi.ch/images/galerie/suozzis_klein_.jpg",
+    "bild_alt": "Familie Suozzi, Inhaber von Mode Suozzi",
+    "bildunterschrift": "Die Inhaber, Familie Suozzi",
+    "text": "Seit 55 Jahren kleiden wir Männer aus Uster und dem Zürcher Oberland ein – an der Zentralstrasse 1, direkt am Sternenplatz.\n\nAls Familiengeschäft setzen wir auf italienische Qualität, ehrliche Beratung und Kundinnen und Kunden, die immer wieder kommen.",
+    "zitat": "„Wir freuen uns auf Ihren Besuch!“"
+  },
+  "besuch": {
+    "titel": "Besuch",
+    "einleitung": "Sie finden uns im Zentrum von Uster, wenige Gehminuten vom Bahnhof.",
+    "firma": "Mode Suozzi",
+    "strasse": "Zentralstrasse 1",
+    "ort": "8610 Uster",
+    "telefon": "044 940 87 21",
+    "fax": "044 940 89 80",
+    "email": "shop@modesuozzi.ch",
+    "oeffnungszeiten": [
+      { "bezeichnung": "Montag – Freitag", "tage": ["Mo", "Di", "Mi", "Do", "Fr"], "zeiten": "09:00–12:00, 14:00–18:30" },
+      { "bezeichnung": "Samstag", "tage": ["Sa"], "zeiten": "08:30–16:00" },
+      { "bezeichnung": "Sonntag", "tage": ["So"], "zeiten": "geschlossen" }
+    ],
+    "laden_bild": "/images/laden-tag.webp",
+    "laden_bild_alt": "Ladenfront von Mode Suozzi mit grünem Vordach an der Ecke Zentralstrasse",
+    "laden_titel": "Das Eckhaus mit dem grünen Vordach",
+    "laden_text": "Zentralstrasse 1, direkt am Sternenplatz. Am Abend erkennen Sie uns an der grün leuchtenden Schrift."
+  }
+}

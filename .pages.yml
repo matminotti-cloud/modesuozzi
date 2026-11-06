@@ -1,0 +1,187 @@
+# Admin-Konsole für modesuozzi.ch – Pages CMS (https://app.pagescms.org)
+media:
+  input: images
+  output: /images
+  categories: [image]
+  rename: safe
+
+settings:
+  commit:
+    identity: user
+    templates:
+      update: "Inhalt aktualisiert: {path} ({userName})"
+      create: "Bild hinzugefügt: {path} ({userName})"
+      delete: "Entfernt: {path} ({userName})"
+
+content:
+  - name: website
+    label: Website-Inhalte
+    type: file
+    path: content/site.json
+    format: json
+    operations:
+      delete: false
+    fields:
+
+      - name: seo
+        label: Allgemein
+        type: object
+        fields:
+          - name: titel
+            label: Seitentitel (Browser-Tab und Google)
+            type: string
+            options: { maxlength: 70 }
+          - name: beschreibung
+            label: Kurzbeschreibung für Google
+            type: text
+            options: { maxlength: 170 }
+          - name: testversion
+            label: Testversion (vor Google verbergen)
+            description: Ausschalten, sobald die Seite unter modesuozzi.ch live ist.
+            type: boolean
+
+      - name: hero
+        label: Titelbereich
+        type: object
+        fields:
+          - name: oberzeile
+            label: Oberzeile
+            type: string
+          - name: titel
+            label: Überschrift
+            type: string
+          - name: text
+            label: Einleitung
+            type: text
+          - name: bild
+            label: Titelbild
+            description: Querformat, mindestens 1600 Pixel breit.
+            type: image
+          - name: bild_alt
+            label: Bildbeschreibung (für Blinde und Google)
+            type: string
+          - name: hinweis_titel
+            label: Hinweis auf dem Bild – Titel
+            description: z. B. „Beachten Sie unser Herbstfenster!“ – leer lassen, um den Hinweis auszublenden.
+            type: string
+          - name: hinweis_text
+            label: Hinweis auf dem Bild – Text
+            type: string
+
+      - name: sortiment
+        label: Sortiment
+        type: object
+        fields:
+          - name: titel
+            label: Überschrift
+            type: string
+          - name: einleitung
+            label: Einleitung
+            type: text
+          - name: aktuelle_saison
+            label: Aktuelle Saison hervorheben
+            description: „automatisch“ = März–August Frühling/Sommer, September–Februar Herbst/Winter.
+            type: select
+            options:
+              values:
+                - { name: automatisch, label: Automatisch }
+                - { name: herbst_winter, label: Herbst / Winter }
+                - { name: fruehling_sommer, label: Frühling / Sommer }
+          - name: herbst_winter
+            label: Herbst / Winter
+            type: object
+            list:
+              collapsible: { collapsed: true, summary: "{artikel} – {marke}" }
+            fields:
+              - { name: artikel, label: Artikel, type: string }
+              - { name: marke, label: Marke, type: string }
+          - name: fruehling_sommer
+            label: Frühling / Sommer
+            type: object
+            list:
+              collapsible: { collapsed: true, summary: "{artikel} – {marke}" }
+            fields:
+              - { name: artikel, label: Artikel, type: string }
+              - { name: marke, label: Marke, type: string }
+
+      - name: marken
+        label: Marken
+        type: object
+        fields:
+          - name: titel
+            label: Überschrift
+            type: string
+          - name: einleitung
+            label: Einleitung
+            type: text
+          - name: liste
+            label: Marken
+            type: object
+            list:
+              collapsible: { collapsed: true, summary: "{name}" }
+            fields:
+              - { name: name, label: Name, type: string, required: true }
+              - { name: link, label: Website (optional), type: string }
+
+      - name: ueber_uns
+        label: Über uns
+        type: object
+        fields:
+          - name: titel
+            label: Überschrift
+            type: string
+          - name: bild
+            label: Foto
+            type: image
+          - name: bild_alt
+            label: Bildbeschreibung
+            type: string
+          - name: bildunterschrift
+            label: Bildunterschrift
+            type: string
+          - name: text
+            label: Text
+            description: Absätze mit einer Leerzeile trennen.
+            type: text
+          - name: zitat
+            label: Zitat (optional)
+            type: string
+
+      - name: besuch
+        label: Besuch, Kontakt & Öffnungszeiten
+        type: object
+        fields:
+          - { name: titel, label: Überschrift, type: string }
+          - { name: einleitung, label: Einleitung, type: text }
+          - { name: firma, label: Firmenname, type: string }
+          - { name: strasse, label: Strasse, type: string }
+          - { name: ort, label: PLZ und Ort, type: string }
+          - { name: telefon, label: Telefon, type: string }
+          - { name: fax, label: Fax (optional), type: string }
+          - { name: email, label: E-Mail, type: string }
+          - name: oeffnungszeiten
+            label: Öffnungszeiten
+            type: object
+            list:
+              collapsible: { collapsed: true, summary: "{bezeichnung}: {zeiten}" }
+            fields:
+              - name: bezeichnung
+                label: Bezeichnung
+                description: z. B. „Montag – Freitag“
+                type: string
+              - name: tage
+                label: Gilt für
+                type: select
+                options:
+                  multiple: true
+                  values: [Mo, Di, Mi, Do, Fr, Sa, So]
+              - name: zeiten
+                label: Zeiten
+                description: Format „09:00–12:00, 14:00–18:30“ oder „geschlossen“
+                type: string
+          - name: laden_bild
+            label: Foto des Ladens
+            type: image
+          - { name: laden_bild_alt, label: Bildbeschreibung, type: string }
+          - { name: laden_titel, label: Bildtitel, type: string }
+          - { name: laden_text, label: Bildtext, type: text }

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mode Suozzi – Herrenmode am Sternenplatz in Uster</title>
+<meta name="description" content="Mode Suozzi, Zentralstrasse 1, 8610 Uster: italienische Herrenmode seit 55 Jahren.">
+<meta name="theme-color" content="#273837">
+<link rel="icon" href="images/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400&family=Jost:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brand: #273837;
+    --gold: #b0974c;
+    --brand-deep: #1c2928;
+    --chalk: #fbfaf8;
+    --paper: #ffffff;
+    --stone: #e7e5e1;
+    --pin: #9aa59f;
+    --ink: #1c2626;
+    --muted: #56625f;
+    --accent: #7d6a2e;
+    --line: rgba(39, 56, 55, .16);
+    --stripe: rgba(176, 151, 76, .09);
+    color-scheme: light;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --chalk: #141c1c; --paper: #1a2424; --stone: #243131;
+      --ink: #eceae6; --muted: #a9b0bd; --accent: #c9ae63;
+      --line: rgba(236, 234, 230, .14); color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --chalk: #141c1c; --paper: #1a2424; --stone: #243131;
+    --ink: #eceae6; --muted: #a9b0bd; --accent: #c9ae63;
+    --line: rgba(236, 234, 230, .14); color-scheme: dark;
+  }
+  *, *::before, *::after { box-sizing: inherit; }
+  html { scroll-behavior: smooth; scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 72px); }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    margin: 0; background: var(--chalk); color: var(--ink);
+    font: 400 17px/1.6 "Jost", "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+  h1, h2, h3 { font-family: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif; font-weight: 400; line-height: 1.1; margin: 0; }
+  .wrap { width: min(1120px, 100% - 48px); margin-inline: auto; }
+
+  /* Header */
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--brand); }
+  header {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9;
+    background: var(--brand); border-bottom: 1px solid rgba(176, 151, 76, .35);
+  }
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 76px; }
+  .logo { display: flex; align-items: center; text-decoration: none; }
+  .logo img { height: 52px; width: auto; }
+  .logo span { font-family: "Bodoni Moda", Georgia, serif; font-size: 1.5rem; color: var(--gold); }
+  nav ul { list-style: none; display: flex; gap: 28px; margin: 0; padding: 0; }
+  nav a { text-decoration: none; font-size: .95rem; color: #d6dcd8; padding: 6px 0; border-bottom: 1px solid transparent; }
+  nav a:hover { color: var(--gold); border-bottom-color: var(--gold); }
+  .menu-btn { display: none; background: none; border: 1px solid rgba(176, 151, 76, .5); color: var(--gold); font: inherit; padding: 6px 14px; border-radius: 2px; cursor: pointer; }
+  @media (max-width: 760px) {
+    .menu-btn { display: block; }
+    nav { position: absolute; left: 0; right: 0; top: 100%; background: var(--brand); border-bottom: 1px solid rgba(176, 151, 76, .35); display: none; }
+    nav.open { display: block; }
+    nav ul { flex-direction: column; gap: 0; padding: 8px 24px 16px; }
+    nav a { display: block; padding: 12px 0; font-size: 1.05rem; }
+  }
+
+  /* Hero: pinstripe cloth */
+  .hero {
+    background-color: var(--brand);
+    background-image: repeating-linear-gradient(90deg, transparent 0 22px, var(--stripe) 22px 23px);
+    color: #f4f2ee;
+  }
+  .hero-grid { display: grid; grid-template-columns: 1.15fr 1fr; align-items: stretch; min-height: min(78vh, 680px); }
+  .hero-text { padding: 72px 48px 72px 0; display: flex; flex-direction: column; justify-content: center; }
+  .since { font-family: "Bodoni Moda", Georgia, serif; font-style: italic; font-size: 1.15rem; color: var(--gold); margin: 0 0 20px; }
+  .hero h1 { font-size: clamp(2.6rem, 6vw, 4.6rem); letter-spacing: -.01em; }
+  .hero p.lead { font-size: 1.15rem; max-width: 34ch; color: #d6dcd8; margin: 24px 0 36px; }
+  .cta { display: flex; flex-wrap: wrap; gap: 14px; }
+  .btn { display: inline-block; text-decoration: none; padding: 13px 24px; border-radius: 2px; font-weight: 500; }
+  .btn-light { background: var(--gold); color: var(--brand-deep); }
+  .btn-light:hover { background: #c4ab5f; }
+  .btn-ghost { border: 1px solid rgba(176, 151, 76, .6); color: #f4f2ee; }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+  .hero-img { position: relative; overflow: hidden; }
+  .hero-img img { width: 100%; height: 100%; object-fit: cover; object-position: 74% 60%; }
+  .window-note {
+    position: absolute; left: 20px; bottom: 20px; right: 20px; max-width: 300px;
+    background: var(--gold); color: var(--brand-deep); padding: 14px 18px; border-radius: 2px;
+    font-family: "Bodoni Moda", Georgia, serif; font-size: 1.1rem; line-height: 1.3;
+  }
+  .window-note small { display: block; font-family: "Jost", Arial, sans-serif; font-size: .85rem; opacity: .85; margin-top: 4px; }
+  @media (max-width: 860px) {
+    .hero-grid { grid-template-columns: 1fr; min-height: 0; }
+    .hero-text { padding: 56px 0 40px; }
+    .hero-img { margin: 0 -24px; aspect-ratio: 4 / 3; }
+  }
+
+  /* Sections */
+  section.block { padding: 96px 0; }
+  .block + .block { border-top: 1px solid var(--line); }
+  .head { display: grid; grid-template-columns: 1fr 1.4fr; gap: 48px; margin-bottom: 56px; align-items: end; }
+  .head h2 { font-size: clamp(2rem, 4vw, 3rem); }
+  .head p { margin: 0; color: var(--muted); max-width: 52ch; }
+  @media (max-width: 760px) { .head { grid-template-columns: 1fr; gap: 16px; margin-bottom: 36px; } section.block { padding: 64px 0; } }
+
+  /* Sortiment */
+  .seasons { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--line); background: var(--paper); }
+  .season { padding: 40px; }
+  .season + .season { border-left: 1px solid var(--line); }
+  .season h3 { font-size: 1.7rem; margin-bottom: 6px; }
+  .season .state { font-size: .9rem; color: var(--accent); margin: 0 0 24px; }
+  .season ul { list-style: none; padding: 0; margin: 0; }
+  .season li { display: flex; justify-content: space-between; gap: 16px; padding: 14px 0; border-top: 1px solid var(--line); }
+  .season li span:last-child { color: var(--muted); font-size: .95rem; text-align: right; }
+  .season.off { color: var(--muted); }
+  @media (max-width: 760px) { .seasons { grid-template-columns: 1fr; } .season + .season { border-left: 0; border-top: 1px solid var(--line); } .season { padding: 28px 24px; } }
+
+  /* Marken */
+  .brands { display: flex; flex-wrap: wrap; gap: 6px 0; margin: 0; padding: 0; list-style: none; }
+  .brands li { font-family: "Bodoni Moda", Georgia, serif; font-size: clamp(1.5rem, 3.4vw, 2.5rem); line-height: 1.35; }
+  .brands li:not(:last-child)::after { content: "/"; color: var(--pin); margin: 0 .45em; font-style: italic; }
+  .brands a { text-decoration: none; }
+  .brands a:hover { color: var(--accent); }
+
+  /* Über uns */
+  .about { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+  .about figure { margin: 0; }
+  .about img { width: 100%; border-radius: 2px; filter: saturate(.9); }
+  .about figcaption { font-size: .9rem; color: var(--muted); margin-top: 10px; }
+  .about h2 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 24px; }
+  .about p { max-width: 46ch; color: var(--muted); }
+  .about p.quote { font-family: "Bodoni Moda", Georgia, serif; font-style: italic; font-size: 1.5rem; line-height: 1.35; color: var(--ink); margin-top: 32px; }
+  @media (max-width: 860px) { .about { grid-template-columns: 1fr; gap: 32px; } }
+
+  /* Besuch */
+  .visit { display: grid; grid-template-columns: 1fr 1fr 1.3fr; gap: 40px; }
+  .visit h3 { font-size: 1.35rem; margin-bottom: 16px; }
+  .visit address { font-style: normal; }
+  .visit p { margin: 0 0 6px; }
+  .hours { width: 100%; border-collapse: collapse; }
+  .hours th, .hours td { text-align: left; font-weight: 400; padding: 8px 0; border-top: 1px solid var(--line); vertical-align: top; }
+  .hours td { text-align: right; color: var(--muted); }
+  .hours tr.today th, .hours tr.today td { color: var(--ink); font-weight: 500; }
+  .status { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; font-size: .95rem; }
+  .status::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--pin); }
+  .status.open::before { background: #3c8a5a; }
+  .map { border: 1px solid var(--line); min-height: 300px; overflow: hidden; border-radius: 2px; }
+  .map iframe { width: 100%; height: 100%; min-height: 300px; border: 0; display: block; }
+  .storefront { margin: 48px 0 0; display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: end; }
+  .storefront img { width: 100%; height: auto; border-radius: 2px; }
+  .storefront figcaption { color: var(--muted); max-width: 36ch; }
+  .storefront figcaption strong { display: block; font-family: "Bodoni Moda", Georgia, serif; font-weight: 400; font-size: 1.35rem; color: var(--ink); margin-bottom: 8px; }
+  @media (max-width: 760px) { .storefront { grid-template-columns: 1fr; gap: 16px; } }
+  @media (max-width: 960px) { .visit { grid-template-columns: 1fr 1fr; } .map { grid-column: 1 / -1; } }
+  @media (max-width: 560px) { .visit { grid-template-columns: 1fr; } }
+
+  footer { background: var(--brand-deep); color: #b7c0bc; padding: 40px 0; font-size: .9rem; }
+  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
+  footer a { color: var(--gold); }
+
+  .hidden { display: none !important; }
+  .about .text p + p { margin-top: 0; }
+  body.loading main { opacity: 0; }
+  main { transition: opacity .25s ease; }
+</style>
+</head>
+<body class="loading">
+
+<header>
+  <div class="wrap bar">
+    <a class="logo" href="#top" aria-label="Mode Suozzi, zum Seitenanfang">
+      <img src="images/logo.png" alt="Mode Suozzi" width="97" height="52">
+    </a>
+    <button class="menu-btn" aria-expanded="false" aria-controls="nav">Menü</button>
+    <nav id="nav" aria-label="Hauptnavigation">
+      <ul>
+        <li><a href="#sortiment" data-t="sortiment.titel">Sortiment</a></li>
+        <li><a href="#marken">Marken</a></li>
+        <li><a href="#ueber-uns" data-t="ueber_uns.titel">Über uns</a></li>
+        <li><a href="#besuch" data-t="besuch.titel">Besuch</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-text">
+        <p class="since" data-t="hero.oberzeile"></p>
+        <h1 data-t="hero.titel"></h1>
+        <p class="lead" data-t="hero.text"></p>
+        <div class="cta">
+          <a class="btn btn-light" href="#besuch">Öffnungszeiten &amp; Anfahrt</a>
+          <a class="btn btn-ghost" data-tel><span data-t="besuch.telefon"></span> anrufen</a>
+        </div>
+      </div>
+      <div class="hero-img">
+        <img data-img="hero.bild" data-alt="hero.bild_alt" alt="" width="1600" height="1143">
+        <p class="window-note" id="note"><span data-t="hero.hinweis_titel"></span><small data-t="hero.hinweis_text"></small></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="sortiment">
+    <div class="wrap">
+      <div class="head">
+        <h2 data-t="sortiment.titel"></h2>
+        <p data-t="sortiment.einleitung"></p>
+      </div>
+      <div class="seasons">
+        <article class="season" data-season="herbst_winter">
+          <h3>Herbst / Winter</h3><p class="state"></p><ul></ul>
+        </article>
+        <article class="season" data-season="fruehling_sommer">
+          <h3>Frühling / Sommer</h3><p class="state"></p><ul></ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="marken">
+    <div class="wrap">
+      <div class="head">
+        <h2 data-t="marken.titel"></h2>
+        <p data-t="marken.einleitung"></p>
+      </div>
+      <ul class="brands" id="brands"></ul>
+    </div>
+  </section>
+
+  <section class="block" id="ueber-uns">
+    <div class="wrap about">
+      <figure>
+        <img data-img="ueber_uns.bild" data-alt="ueber_uns.bild_alt" alt="" loading="lazy">
+        <figcaption data-t="ueber_uns.bildunterschrift"></figcaption>
+      </figure>
+      <div>
+        <h2 data-t="ueber_uns.titel"></h2>
+        <div class="text" id="about-text"></div>
+        <p class="quote" data-t="ueber_uns.zitat"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="besuch">
+    <div class="wrap">
+      <div class="head">
+        <h2 data-t="besuch.titel"></h2>
+        <p data-t="besuch.einleitung"></p>
+      </div>
+      <div class="visit">
+        <div>
+          <h3>Adresse</h3>
+          <address>
+            <p><span data-t="besuch.firma"></span><br><span data-t="besuch.strasse"></span><br><span data-t="besuch.ort"></span></p>
+            <p style="margin-top:16px">Telefon <a data-tel><span data-t="besuch.telefon"></span></a></p>
+            <p id="fax">Fax <span data-t="besuch.fax"></span></p>
+            <p>E-Mail <a id="mail"></a></p>
+          </address>
+        </div>
+        <div>
+          <h3>Öffnungszeiten</h3>
+          <table class="hours"><tbody id="hours"></tbody></table>
+          <p class="status" id="status" hidden></p>
+        </div>
+        <div class="map">
+          <iframe id="map" title="Karte" loading="lazy"></iframe>
+        </div>
+      </div>
+      <figure class="storefront">
+        <img data-img="besuch.laden_bild" data-alt="besuch.laden_bild_alt" alt="" loading="lazy">
+        <figcaption><strong data-t="besuch.laden_titel"></strong><span data-t="besuch.laden_text"></span></figcaption>
+      </figure>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© <span id="year"></span> <span data-t="besuch.firma"></span> · <span data-t="besuch.strasse"></span> · <span data-t="besuch.ort"></span></span>
+    <a data-tel><span data-t="besuch.telefon"></span></a>
+  </div>
+</footer>
+
+<!-- Nur für die lokale Vorschau (Datei direkt im Browser geöffnet). Online wird immer content/site.json geladen. -->
+<script type="application/json" id="fallback">{"seo": {"titel": "Mode Suozzi – Herrenmode am Sternenplatz in Uster", "beschreibung": "Mode Suozzi, Zentralstrasse 1, 8610 Uster: italienische Herrenmode seit 55 Jahren. Anzüge, Hemden, Strick, Jeans und Schuhe von Pal Zileri, Paul & Shark, Gran Sasso, Trussardi und mehr.", "testversion": true}, "hero": {"oberzeile": "Seit 55 Jahren am Sternenplatz", "titel": "Italienische Herrenmode in Uster.", "text": "Anzüge, Hemden, Strick und Schuhe von ausgewählten Marken – mit persönlicher Beratung im Familiengeschäft.", "bild": "/images/schaufenster-abend.webp", "bild_alt": "Beleuchtetes Schaufenster von Mode Suozzi am Abend, mit Anzügen, Jacken und Schuhen", "hinweis_titel": "Beachten Sie unser Herbstfenster!", "hinweis_text": "Wir freuen uns auf Ihren Besuch."}, "sortiment": {"titel": "Sortiment", "einleitung": "Unser Sortiment wird jahreszeitengetreu angepasst. Im Laden finden Sie die aktuelle Kollektion in Ihrer Grösse – und jemanden, der sich Zeit für Sie nimmt.", "aktuelle_saison": "automatisch", "herbst_winter": [{"artikel": "Anzüge", "marke": "Textura"}, {"artikel": "Hemden", "marke": "Bolzonella 1934"}, {"artikel": "Jeans", "marke": "Trussardi"}, {"artikel": "Schuhe", "marke": "Calpierre"}], "fruehling_sommer": [{"artikel": "Anzüge", "marke": "Textura"}, {"artikel": "Hemden", "marke": "Bolzonella 1934"}, {"artikel": "Jeans", "marke": "Trussardi"}, {"artikel": "Schuhe", "marke": "Galizio Torresi"}]}, "marken": {"titel": "Unsere Marken", "einleitung": "Vorwiegend italienische Häuser, mit denen wir seit Jahren zusammenarbeiten.", "liste": [{"name": "Pal Zileri", "link": "https://www.palzileri.com"}, {"name": "Paul & Shark", "link": "https://www.paulshark.com"}, {"name": "Gran Sasso", "link": "https://www.gransasso.com"}, {"name": "Trussardi", "link": "https://www.trussardi.com/"}, {"name": "Bolzonella", "link": "http://www.bolzonella1934.it"}, {"name": "Brax", "link": "https://www.brax.com/de/ch/index.html"}, {"name": "Aldo Brue", "link": "https://www.cityschuh.com/Herren/"}, {"name": "Mabrun", "link": "http://www.mabrun.it"}, {"name": "Green Coast", "link": "http://www.greencoast.it/"}, {"name": "Galizio Torresi", "link": "http://www.galiziotorresi.it"}, {"name": "Calpierre", "link": "http://www.calpierre.it"}]}, "ueber_uns": {"titel": "Über uns", "bild": "https://www.modesuozzi.ch/images/galerie/suozzis_klein_.jpg", "bild_alt": "Familie Suozzi, Inhaber von Mode Suozzi", "bildunterschrift": "Die Inhaber, Familie Suozzi", "text": "Seit 55 Jahren kleiden wir Männer aus Uster und dem Zürcher Oberland ein – an der Zentralstrasse 1, direkt am Sternenplatz.\n\nAls Familiengeschäft setzen wir auf italienische Qualität, ehrliche Beratung und Kundinnen und Kunden, die immer wieder kommen.", "zitat": "„Wir freuen uns auf Ihren Besuch!“"}, "besuch": {"titel": "Besuch", "einleitung": "Sie finden uns im Zentrum von Uster, wenige Gehminuten vom Bahnhof.", "firma": "Mode Suozzi", "strasse": "Zentralstrasse 1", "ort": "8610 Uster", "telefon": "044 940 87 21", "fax": "044 940 89 80", "email": "shop@modesuozzi.ch", "oeffnungszeiten": [{"bezeichnung": "Montag – Freitag", "tage": ["Mo", "Di", "Mi", "Do", "Fr"], "zeiten": "09:00–12:00, 14:00–18:30"}, {"bezeichnung": "Samstag", "tage": ["Sa"], "zeiten": "08:30–16:00"}, {"bezeichnung": "Sonntag", "tage": ["So"], "zeiten": "geschlossen"}], "laden_bild": "/images/laden-tag.webp", "laden_bild_alt": "Ladenfront von Mode Suozzi mit grünem Vordach an der Ecke Zentralstrasse", "laden_titel": "Das Eckhaus mit dem grünen Vordach", "laden_text": "Zentralstrasse 1, direkt am Sternenplatz. Am Abend erkennen Sie uns an der grün leuchtenden Schrift."}}</script>
+
+<script>
+(async function () {
+  // ---------- Inhalte laden ----------
+  let c;
+  try {
+    const r = await fetch('content/site.json', { cache: 'no-cache' });
+    if (!r.ok) throw new Error(r.status);
+    c = await r.json();
+  } catch (e) {
+    c = JSON.parse(document.getElementById('fallback').textContent);
+    if (location.protocol !== 'file:') console.warn('content/site.json nicht geladen, verwende Vorschau-Inhalte', e);
+  }
+  const get = path => path.split('.').reduce((o, k) => (o == null ? o : o[k]), c);
+  const has = v => v != null && String(v).trim() !== '';
+  // "/images/x.webp" (Pages CMS) -> "images/x.webp", damit es auch unter github.io/<repo>/ funktioniert
+  const src = p => !has(p) ? '' : /^(https?:|data:)/.test(p) ? p : p.replace(/^\/+/, '');
+
+  // ---------- Texte und Bilder ----------
+  document.querySelectorAll('[data-t]').forEach(el => { el.textContent = get(el.dataset.t) ?? ''; });
+  document.querySelectorAll('[data-img]').forEach(img => {
+    const s = src(get(img.dataset.img));
+    if (s) { img.src = s; img.alt = get(img.dataset.alt) || ''; }
+    else img.closest('figure, .hero-img')?.classList.add('hidden');
+  });
+
+  // SEO
+  if (has(c.seo?.titel)) document.title = c.seo.titel;
+  if (has(c.seo?.beschreibung)) document.querySelector('meta[name="description"]').content = c.seo.beschreibung;
+  if (c.seo?.testversion) {
+    const m = document.createElement('meta'); m.name = 'robots'; m.content = 'noindex, nofollow';
+    document.head.appendChild(m);
+  }
+
+  // Hinweis auf dem Titelbild, Zitat, Fax: ausblenden wenn leer
+  if (!has(c.hero?.hinweis_titel)) document.getElementById('note').classList.add('hidden');
+  if (!has(c.ueber_uns?.zitat)) document.querySelector('.quote').classList.add('hidden');
+  if (!has(c.besuch?.fax)) document.getElementById('fax').classList.add('hidden');
+
+  // Telefon und E-Mail
+  const tel = (c.besuch?.telefon || '').replace(/[^\d+]/g, '');
+  const telIntl = tel.startsWith('0') ? '+41' + tel.slice(1) : tel;
+  document.querySelectorAll('[data-tel]').forEach(a => a.href = 'tel:' + telIntl);
+  const mail = document.getElementById('mail');
+  mail.href = 'mailto:' + (c.besuch?.email || ''); mail.textContent = c.besuch?.email || '';
+
+  // Karte
+  const q = encodeURIComponent([c.besuch?.firma, c.besuch?.strasse, c.besuch?.ort].filter(Boolean).join(', '));
+  const map = document.getElementById('map');
+  map.src = 'https://www.google.com/maps?q=' + q + '&output=embed';
+  map.title = 'Karte: ' + [c.besuch?.strasse, c.besuch?.ort].filter(Boolean).join(', ');
+
+  // Über uns: Absätze
+  const about = document.getElementById('about-text');
+  (c.ueber_uns?.text || '').split(/\n\s*\n/).filter(has).forEach(t => {
+    const p = document.createElement('p'); p.textContent = t.trim(); about.appendChild(p);
+  });
+
+  // ---------- Sortiment ----------
+  const month = new Date().getMonth() + 1;
+  let current = c.sortiment?.aktuelle_saison || 'automatisch';
+  if (current === 'automatisch') current = month >= 3 && month <= 8 ? 'fruehling_sommer' : 'herbst_winter';
+  document.querySelectorAll('.season').forEach(art => {
+    const key = art.dataset.season, isNow = key === current;
+    art.classList.toggle('off', !isNow);
+    art.querySelector('.state').textContent = isNow ? 'Jetzt im Laden' : (key === 'herbst_winter' ? 'Ab Herbst' : 'Ab Frühling');
+    const ul = art.querySelector('ul');
+    (c.sortiment?.[key] || []).forEach(it => {
+      const li = document.createElement('li');
+      const a = document.createElement('span'); a.textContent = it.artikel || '';
+      const b = document.createElement('span'); b.textContent = it.marke || '';
+      li.append(a, b); ul.appendChild(li);
+    });
+  });
+
+  // ---------- Marken ----------
+  const brands = document.getElementById('brands');
+  (c.marken?.liste || []).forEach(m => {
+    const li = document.createElement('li');
+    if (has(m.link) && /^https?:\/\//.test(m.link)) {
+      const a = document.createElement('a'); a.href = m.link; a.target = '_blank'; a.rel = 'noopener'; a.textContent = m.name;
+      li.appendChild(a);
+    } else li.textContent = m.name;
+    brands.appendChild(li);
+  });
+
+  // ---------- Öffnungszeiten ----------
+  const DAYS = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+  const parts = new Intl.DateTimeFormat('de-CH', { timeZone: 'Europe/Zurich', weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date());
+  const today = DAYS.indexOf(parts.find(p => p.type === 'weekday').value.slice(0, 2));
+  const now = +parts.find(p => p.type === 'hour').value * 60 + +parts.find(p => p.type === 'minute').value;
+  const toMin = s => { const [h, m] = s.split(/[:.]/).map(Number); return h * 60 + (m || 0); };
+  const tbody = document.getElementById('hours');
+  let open = false;
+  (c.besuch?.oeffnungszeiten || []).forEach(z => {
+    const tr = document.createElement('tr');
+    const th = document.createElement('th'); th.scope = 'row'; th.textContent = z.bezeichnung || '';
+    const td = document.createElement('td');
+    const slots = [...(z.zeiten || '').matchAll(/(\d{1,2}[:.]\d{2})\s*[–—-]\s*(\d{1,2}[:.]\d{2})/g)].map(m => [toMin(m[1]), toMin(m[2])]);
+    td.innerHTML = '';
+    (slots.length ? (z.zeiten || '').split(/\s*,\s*/) : [z.zeiten || '']).forEach((t, i) => {
+      if (i) td.appendChild(document.createElement('br'));
+      td.appendChild(document.createTextNode(t.replace(/\s*[–—-]\s*/, ' – ')));
+    });
+    if ((z.tage || []).map(d => DAYS.indexOf(d)).includes(today)) {
+      tr.classList.add('today');
+      if (slots.some(([a, b]) => now >= a && now < b)) open = true;
+    }
+    tr.append(th, td); tbody.appendChild(tr);
+  });
+  const st = document.getElementById('status');
+  st.hidden = false; st.textContent = open ? 'Jetzt geöffnet' : 'Zurzeit geschlossen';
+  st.classList.toggle('open', open);
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+  document.body.classList.remove('loading');
+})();
+
+// Mobiles Menü
+const btn = document.querySelector('.menu-btn'), nav = document.getElementById('nav');
+btn.addEventListener('click', () => btn.setAttribute('aria-expanded', nav.classList.toggle('open')));
+nav.addEventListener('click', e => { if (e.target.tagName === 'A') { nav.classList.remove('open'); btn.setAttribute('aria-expanded', false); } });
+</script>
+</body>
+</html>
