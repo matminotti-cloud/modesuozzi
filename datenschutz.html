@@ -17,12 +17,15 @@
 <meta property="og:image:alt" content="Ladenfront von Mode Suozzi mit grünem Vordach an der Ecke Zentralstrasse">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#273837">
-<meta name="build" content="82a27dc15fc8f91d">
+<meta name="build" content="da5fb16f31966669">
 <link rel="icon" href="images/logo.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400&family=Jost:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+  /* Schriften lokal (fonts/, SIL Open Font License): keine Verbindung zu Google beim Seitenaufruf */
+  @font-face { font-family: "Bodoni Moda"; font-style: normal; font-weight: 400 600; font-display: swap; src: url("fonts/bodoni-moda-latin.woff2") format("woff2"); }
+  @font-face { font-family: "Bodoni Moda"; font-style: italic; font-weight: 400; font-display: swap; src: url("fonts/bodoni-moda-italic-latin.woff2") format("woff2"); }
+  @font-face { font-family: "Jost"; font-style: normal; font-weight: 400 600; font-display: swap; src: url("fonts/jost-latin.woff2") format("woff2"); }
   :root {
     --brand: #273837;
     --gold: #b0974c;
@@ -311,7 +314,7 @@
     <h2>Besuch dieser Website</h2>
     <!-- TODO: vom Inhaber prüfen – Name und Sitz des Hosting-Anbieters, Speicherdauer der Server-Protokolle beim Anbieter erfragen. -->
     <p>Beim Aufruf der Website speichert der Server unseres Hosting-Anbieters (<span class="todo">[Name und Sitz des Hosting-Anbieters]</span>) automatisch technische Angaben in Protokolldateien: IP-Adresse, Datum und Uhrzeit, aufgerufene Seite, Browser und Betriebssystem. Diese Daten brauchen wir für den sicheren Betrieb der Website. Sie werden nach <span class="todo">[Speicherdauer]</span> gelöscht.</p>
-    <p>Die Website selbst setzt keine Cookies und verwendet keine Analyse- oder Werbedienste.</p>
+    <p>Die Website selbst setzt keine Cookies und verwendet keine Analyse- oder Werbedienste. Die Schriften sind auf unserem eigenen Server gespeichert; dafür wird keine Verbindung zu Dritten aufgebaut.</p>
 
     <h2>Kontakt per E-Mail oder Telefon</h2>
     <p>Wenn Sie uns schreiben oder anrufen, verwenden wir Ihre Angaben nur, um Ihre Anfrage zu beantworten. Wir geben sie nicht an Dritte weiter.</p>
@@ -322,7 +325,6 @@
     <ul>
       <li><strong>Google Maps:</strong> Die Karte im Abschnitt «Besuch» wird direkt von Google geladen.</li>
       <li><strong>Google Street View:</strong> Der virtuelle Rundgang durch den Laden wird von Google Maps geladen.</li>
-      <li><strong>Google Fonts:</strong> Die Schriften der Website werden von Servern von Google geladen.</li>
     </ul>
     <p>Dabei erhält Google mindestens Ihre IP-Adresse sowie Angaben zu Browser und aufgerufener Seite. Google Maps kann zudem Cookies setzen. Wie Google diese Daten bearbeitet, steht in der <a href="https://policies.google.com/privacy?hl=de" target="_blank" rel="noopener noreferrer">Datenschutzerklärung von Google<span class="sr-only"> (öffnet in neuem Tab)</span></a>.</p>
 
