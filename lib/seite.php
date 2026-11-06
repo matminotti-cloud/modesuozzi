@@ -80,6 +80,10 @@ $hasHours = (bool) array_filter($week);
   :root {
     --brand: #273837;
     --gold: #b0974c;
+    /* Gold für Text auf dunklem Grün. #b0974c erreicht auf #273837 nur 4,32:1 (zu wenig für WCAG AA).
+       #ccb46a (gleicher Farbton, heller), nach der WCAG-Formel berechnet: 6,04:1 auf --brand #273837,
+       5,27:1 auf den Nadelstreifen im Titelbereich, 7,37:1 auf --brand-deep #1c2928 (Fusszeile). */
+    --gold-on-dark: #ccb46a;
     --brand-deep: #1c2928;
     --chalk: #fbfaf8;
     --paper: #ffffff;
@@ -130,11 +134,11 @@ $hasHours = (bool) array_filter($week);
   .bar { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 76px; }
   .logo { display: flex; align-items: center; text-decoration: none; }
   .logo img { height: 52px; width: auto; }
-  .logo span { font-family: "Bodoni Moda", Georgia, serif; font-size: 1.5rem; color: var(--gold); }
+  .logo span { font-family: "Bodoni Moda", Georgia, serif; font-size: 1.5rem; color: var(--gold-on-dark); }
   nav ul { list-style: none; display: flex; gap: 28px; margin: 0; padding: 0; }
   nav a { text-decoration: none; font-size: .95rem; color: #d6dcd8; padding: 6px 0; border-bottom: 1px solid transparent; }
-  nav a:hover { color: var(--gold); border-bottom-color: var(--gold); }
-  .menu-btn { display: none; background: none; border: 1px solid rgba(176, 151, 76, .5); color: var(--gold); font: inherit; padding: 6px 14px; border-radius: 2px; cursor: pointer; }
+  nav a:hover { color: var(--gold-on-dark); border-bottom-color: var(--gold-on-dark); }
+  .menu-btn { display: none; background: none; border: 1px solid rgba(176, 151, 76, .5); color: var(--gold-on-dark); font: inherit; padding: 6px 14px; border-radius: 2px; cursor: pointer; }
   @media (max-width: 760px) {
     .menu-btn { display: block; }
     nav { position: absolute; left: 0; right: 0; top: 100%; background: var(--brand); border-bottom: 1px solid rgba(176, 151, 76, .35); display: none; }
@@ -152,7 +156,7 @@ $hasHours = (bool) array_filter($week);
   /* Höhen so bemessen, dass beide Buttons auch bei 1366×768 und 963×666 ohne Scrollen sichtbar sind */
   .hero-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: center; min-height: min(72vh, 640px); padding-block: clamp(28px, 5vh, 56px); }
   .hero-text { display: flex; flex-direction: column; justify-content: center; }
-  .since { font-family: "Bodoni Moda", Georgia, serif; font-style: italic; font-size: 1.15rem; color: var(--gold); margin: 0 0 16px; }
+  .since { font-family: "Bodoni Moda", Georgia, serif; font-style: italic; font-size: 1.15rem; color: var(--gold-on-dark); margin: 0 0 16px; }
   .hero h1 { font-size: clamp(2.4rem, min(5.4vw, 8.5vh), 4.6rem); letter-spacing: -.01em; }
   .hero p.lead { font-size: 1.15rem; max-width: 34ch; color: #d6dcd8; margin: 20px 0 28px; }
   .cta { display: flex; flex-wrap: wrap; align-items: stretch; gap: 12px; }
@@ -167,7 +171,7 @@ $hasHours = (bool) array_filter($week);
   .btn-light { background: var(--gold); color: var(--brand-deep); }
   .btn-light:hover { background: #c4ab5f; }
   .btn-ghost { border: 1px solid rgba(176, 151, 76, .6); color: #f4f2ee; }
-  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-ghost:hover { border-color: var(--gold-on-dark); color: var(--gold-on-dark); }
   .hero-img { margin: 0; }
   /* Querformat 16:9 (Tagesfoto der Ladenfront); Ausschnitt leicht nach oben, damit Vordach und Schrift im Bild bleiben */
   .hero-img img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; object-position: 50% 40%; border-radius: 2px; }
@@ -176,9 +180,9 @@ $hasHours = (bool) array_filter($week);
     display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 20px;
     margin-top: 12px; padding-top: 4px; border-top: 1px solid rgba(176, 151, 76, .35); color: #d6dcd8; font-size: .95rem;
   }
-  .window-note .note-title { font-family: "Bodoni Moda", Georgia, serif; font-style: italic; font-size: 1.15rem; color: var(--gold); padding: 8px 0; }
+  .window-note .note-title { font-family: "Bodoni Moda", Georgia, serif; font-style: italic; font-size: 1.15rem; color: var(--gold-on-dark); padding: 8px 0; }
   .window-note a { display: inline-flex; align-items: center; min-height: 44px; color: #f4f2ee; text-decoration: underline; text-decoration-color: rgba(176, 151, 76, .6); text-underline-offset: 4px; }
-  .window-note a:hover { color: var(--gold); text-decoration-color: currentColor; }
+  .window-note a:hover { color: var(--gold-on-dark); text-decoration-color: currentColor; }
   @media (max-width: 600px) {
     .cta { flex-direction: column; }
     .btn { width: 100%; }
@@ -258,7 +262,7 @@ $hasHours = (bool) array_filter($week);
 
   footer { background: var(--brand-deep); color: #b7c0bc; padding: 40px 0; font-size: .9rem; }
   footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
-  footer a { color: var(--gold); }
+  footer a { color: var(--gold-on-dark); }
 
   .about .text p + p { margin-top: 0; }
 </style>
