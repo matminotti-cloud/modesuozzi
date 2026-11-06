@@ -113,6 +113,52 @@ function ms_zeiten_html($zeiten)
     }, $parts));
 }
 
+/** Tage einer Zeile kurz: ['Mo','Di','Mi','Do','Fr'] -> "Mo–Fr", ['Sa'] -> "Sa", ['Mo','Mi'] -> "Mo, Mi". */
+function ms_tage_kurz(array $tage)
+{
+    $keys = array_keys(MS_WEEKDAYS);
+    $idx = array_map(function ($d) use ($keys) {
+        return array_search($d, $keys, true);
+    }, $tage);
+    sort($idx);
+    $runs = [];
+    foreach ($idx as $i) {
+        $n = count($runs);
+        if ($n && $runs[$n - 1][1] === $i - 1) {
+            $runs[$n - 1][1] = $i;
+        } else {
+            $runs[] = [$i, $i];
+        }
+    }
+    return implode(', ', array_map(function ($r) use ($keys) {
+        if ($r[0] === $r[1]) {
+            return $keys[$r[0]];
+        }
+        return $keys[$r[0]] . ($r[1] - $r[0] === 1 ? ', ' : '–') . $keys[$r[1]];
+    }, $runs));
+}
+
+/** Öffnungszeiten in einer Zeile pro Eintrag für den Footer: [["Mo–Fr", "09:00–12:00, 14:00–18:30"], …]. */
+function ms_zeiten_kurz(array $c)
+{
+    $out = [];
+    foreach (ms_list($c, 'besuch.oeffnungszeiten') as $row) {
+        $tage = ms_tage($row);
+        $label = $tage ? ms_tage_kurz($tage) : trim((string) ($row['bezeichnung'] ?? ''));
+        if ($label === '') {
+            continue;
+        }
+        $slots = ms_slots($row['zeiten'] ?? '');
+        $zeiten = $slots
+            ? implode(', ', array_map(function ($s) {
+                return $s[0] . '–' . $s[1];
+            }, $slots))
+            : trim((string) ($row['zeiten'] ?? ''));
+        $out[] = [$label, $zeiten];
+    }
+    return $out;
+}
+
 function ms_tage(array $row)
 {
     $t = is_array($row['tage'] ?? null) ? array_filter($row['tage'], 'is_string') : [];

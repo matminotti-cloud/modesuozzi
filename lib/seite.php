@@ -303,10 +303,20 @@ $hasHours = (bool) array_filter($week);
   @media (max-width: 960px) { .visit { grid-template-columns: 1fr 1fr; } .map { grid-column: 1 / -1; } }
   @media (max-width: 560px) { .visit { grid-template-columns: 1fr; } }
 
-  footer { background: var(--brand-deep); color: #b7c0bc; padding: 40px 0; font-size: .9rem; }
-  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
-  footer a { color: var(--gold-on-dark); }
+  footer { background: var(--brand-deep); color: #b7c0bc; padding: 48px 0 28px; font-size: .9rem; }
+  footer p { margin: 0; }
+  footer a { color: var(--gold-on-dark); text-underline-offset: .2em; }
+  footer a:hover { color: #fff; }
+  .foot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 28px 48px; }
+  .foot-title { font-family: "Bodoni Moda", Georgia, serif; font-size: 1.15rem; color: var(--gold-on-dark); margin-bottom: 8px !important; }
+  .foot-hours { margin: 0; display: grid; gap: 4px; }
+  .foot-hours div { display: flex; gap: 12px; }
+  .foot-hours dt { min-width: 3.6em; color: #d6dcd8; }
+  .foot-hours dd { margin: 0; }
+  footer .foot-grid a { display: inline-block; padding: 6px 0; }
+  .foot-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 24px; margin-top: 36px; padding-top: 18px; border-top: 1px solid rgba(255, 255, 255, .12); }
   footer .legal-links { display: flex; gap: 20px; }
+  footer .legal-links a { display: inline-block; padding: 10px 0; }
 
   .about .text p + p { margin-top: 0; }
 
@@ -523,14 +533,33 @@ $hasHours = (bool) array_filter($week);
 
 <footer>
   <div class="wrap">
-    <span>© <span id="year"><?= date('Y') ?></span> <?= ms_e(implode(' · ', array_filter([ms_str($c, 'besuch.firma'), ms_str($c, 'besuch.strasse'), ms_str($c, 'besuch.ort')]))) ?></span>
-<?php if ($R['tel']): ?>
-    <a href="tel:<?= ms_e($R['tel']) ?>"><?= $t('besuch.telefon') ?></a>
+    <div class="foot-grid">
+      <div>
+        <p class="foot-title"><?= $t('besuch.firma') ?></p>
+        <p><?= $t('besuch.strasse') ?><br><?= $t('besuch.ort') ?></p>
+      </div>
+      <div>
+        <p class="foot-title">Kontakt</p>
+        <p><?php if ($R['tel']): ?><a href="tel:<?= ms_e($R['tel']) ?>"><?= $t('besuch.telefon') ?></a><br><?php endif; ?><?php if ($has('besuch.email')): ?><a href="mailto:<?= $t('besuch.email') ?>"><?= $t('besuch.email') ?></a><?php endif; ?></p>
+      </div>
+<?php $kurz = ms_zeiten_kurz($c); if ($kurz): ?>
+      <div>
+        <p class="foot-title">Öffnungszeiten</p>
+        <dl class="foot-hours">
+<?php foreach ($kurz as [$tage, $zeiten]): ?>
+          <div><dt><?= ms_e($tage) ?></dt><dd><?= ms_e($zeiten) ?></dd></div>
+<?php endforeach; ?>
+        </dl>
+      </div>
 <?php endif; ?>
-    <nav class="legal-links" aria-label="Rechtliches">
-      <a href="impressum.html"<?= $page === 'impressum' ? ' aria-current="page"' : '' ?>>Impressum</a>
-      <a href="datenschutz.html"<?= $page === 'datenschutz' ? ' aria-current="page"' : '' ?>>Datenschutz</a>
-    </nav>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span id="year"><?= date('Y') ?></span> <?= $t('besuch.firma') ?></span>
+      <nav class="legal-links" aria-label="Rechtliches">
+        <a href="impressum.html"<?= $page === 'impressum' ? ' aria-current="page"' : '' ?>>Impressum</a>
+        <a href="datenschutz.html"<?= $page === 'datenschutz' ? ' aria-current="page"' : '' ?>>Datenschutz</a>
+      </nav>
+    </div>
   </div>
 </footer>
 
