@@ -26,6 +26,21 @@ $mapSrc = 'https://www.google.com/maps?q=' . rawurlencode($address) . '&output=e
 $seasons = ['herbst_winter' => ['Herbst / Winter', 'Ab Herbst'], 'fruehling_sommer' => ['Frühling / Sommer', 'Ab Frühling']];
 $seasonShort = ['herbst_winter' => 'Herbst/Winter', 'fruehling_sommer' => 'Frühling/Sommer'];
 $seasonSetting = ms_str($c, 'sortiment.aktuelle_saison') ?: 'automatisch';
+// Wochenplan aus site.json für das Skript (Index 0 = Sonntag … 6 = Samstag)
+$week = array_fill(0, 7, []);
+$dayIndex = array_flip(['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa']);
+foreach (ms_list($c, 'besuch.oeffnungszeiten') as $row) {
+    foreach (ms_tage($row) as $d) {
+        foreach (ms_slots($row['zeiten'] ?? '') as $slot) {
+            $week[$dayIndex[$d]][] = $slot;
+        }
+    }
+}
+foreach ($week as $i => $slots) {
+    sort($slots);
+    $week[$i] = $slots;
+}
+$hasHours = (bool) array_filter($week);
 ?>
 <!DOCTYPE html>
 <html lang="de-CH">
@@ -146,6 +161,9 @@ $seasonSetting = ms_str($c, 'sortiment.aktuelle_saison') ?: 'automatisch';
     text-decoration: none; padding: 10px 20px; border-radius: 2px; font-weight: 500; font-size: .95rem; line-height: 1.3; white-space: nowrap;
   }
   .btn small { font-size: .8rem; font-weight: 400; opacity: .85; letter-spacing: .01em; }
+  .hero .status { color: #d6dcd8; margin-top: 18px; }
+  .hero .status::before { background: #9aa59f; }
+  .hero .status.open::before { background: #5fd38d; box-shadow: 0 0 0 3px rgba(95, 211, 141, .22); }
   .btn-light { background: var(--gold); color: var(--brand-deep); }
   .btn-light:hover { background: #c4ab5f; }
   .btn-ghost { border: 1px solid rgba(176, 151, 76, .6); color: #f4f2ee; }
@@ -224,8 +242,9 @@ $seasonSetting = ms_str($c, 'sortiment.aktuelle_saison') ?: 'automatisch';
   .hours th, .hours td { text-align: left; font-weight: 400; padding: 8px 0; border-top: 1px solid var(--line); vertical-align: top; }
   .hours td { text-align: right; color: var(--muted); }
   .hours tr.today th, .hours tr.today td { color: var(--ink); font-weight: 500; }
-  .status { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; font-size: .95rem; }
-  .status::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--pin); }
+  .status { display: inline-flex; align-items: center; gap: 8px; margin: 16px 0 0; font-size: .95rem; }
+  .status[hidden] { display: none; }
+  .status::before { content: ""; flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--pin); }
   .status.open::before { background: #3c8a5a; }
   .map { border: 1px solid var(--line); min-height: 300px; overflow: hidden; border-radius: 2px; }
   .map iframe { width: 100%; height: 100%; min-height: 300px; border: 0; display: block; }
@@ -281,6 +300,9 @@ $seasonSetting = ms_str($c, 'sortiment.aktuelle_saison') ?: 'automatisch';
           <a class="btn btn-ghost" href="tel:<?= ms_e($R['tel']) ?>"><span>Anrufen</span><small><?= $t('besuch.telefon') ?></small></a>
 <?php endif; ?>
         </div>
+<?php if ($hasHours): ?>
+        <p class="status" data-open-status hidden></p>
+<?php endif; ?>
       </div>
 <?php if ($has('hero.bild')): ?>
       <figure class="hero-img">
@@ -401,7 +423,9 @@ $seasonSetting = ms_str($c, 'sortiment.aktuelle_saison') ?: 'automatisch';
 <?php endforeach; ?>
             </tbody>
           </table>
-          <p class="status" id="status" hidden></p>
+<?php if ($hasHours): ?>
+          <p class="status" data-open-status hidden></p>
+<?php endif; ?>
         </div>
         <div class="map">
           <iframe src="<?= ms_e($mapSrc) ?>" title="Karte: <?= ms_e(implode(', ', array_filter([ms_str($c, 'besuch.strasse'), ms_str($c, 'besuch.ort')]))) ?>" loading="lazy"></iframe>
@@ -452,21 +476,71 @@ if (seasons) {
   });
 }
 
-// Öffnungszeiten: heutigen Tag markieren, "Jetzt geöffnet" / "Zurzeit geschlossen"
+// Öffnungszeiten (aus content/site.json): Index 0 = Sonntag … 6 = Samstag
+const OPENING_HOURS = <?= json_encode($week, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES) ?>;
+// Feiertage, an denen der Laden geschlossen bleibt (ISO-Datum JJJJ-MM-TT), z. B.:
+//   '2026-12-25', // Weihnachten
+//   '2026-12-26', // Stephanstag
+const HOLIDAYS = [
+];
 const DAYS = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
-const parts = new Intl.DateTimeFormat('de-CH', { timeZone: 'Europe/Zurich', weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date());
-const today = DAYS.indexOf(parts.find(p => p.type === 'weekday').value.slice(0, 2));
-const now = +parts.find(p => p.type === 'hour').value * 60 + +parts.find(p => p.type === 'minute').value;
-const toMin = s => { const [h, m] = s.split(/[:.]/).map(Number); return h * 60 + (m || 0); };
-let open = false;
-document.querySelectorAll('#hours tr').forEach(tr => {
-  if (!tr.dataset.tage.split(' ').map(d => DAYS.indexOf(d)).includes(today)) return;
-  tr.classList.add('today');
-  const slots = [...tr.dataset.zeiten.matchAll(/(\d{1,2}[:.]\d{2})\s*[–—-]\s*(\d{1,2}[:.]\d{2})/g)];
-  if (slots.some(m => now >= toMin(m[1]) && now < toMin(m[2]))) open = true;
-});
-const st = document.getElementById('status');
-if (document.querySelector('#hours tr')) { st.hidden = false; st.textContent = open ? 'Jetzt geöffnet' : 'Zurzeit geschlossen'; st.classList.toggle('open', open); }
+const DAY_NAMES = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+const toMin = s => { const [h, m] = s.split(':').map(Number); return h * 60 + m; };
+
+// Datum und Uhrzeit in Zürich, unabhängig von der Zeitzone des Geräts
+function zurichNow(date = new Date()) {
+  const p = {};
+  new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Zurich', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', hourCycle: 'h23' })
+    .formatToParts(date).forEach(x => { p[x.type] = +x.value; });
+  const day = Date.UTC(p.year, p.month - 1, p.day);
+  return { day, weekday: new Date(day).getUTCDay(), minutes: (p.hour % 24) * 60 + p.minute };
+}
+
+// Zeitfenster eines Tages (offset 0 = heute, 1 = morgen …), an Feiertagen keine
+function slotsOn(z, offset) {
+  const d = new Date(z.day + offset * 864e5);
+  return HOLIDAYS.includes(d.toISOString().slice(0, 10)) ? [] : (OPENING_HOURS[d.getUTCDay()] || []);
+}
+
+// Gemeinsame Logik für die Anzeige im Titelbereich und bei «Besuch»
+function openingStatus(date = new Date()) {
+  const z = zurichNow(date);
+  const today = slotsOn(z, 0);
+  for (let i = 0; i < today.length; i++) {
+    const [from, to] = today[i];
+    if (z.minutes < toMin(from)) {
+      return { open: false, text: i === 0 ? `Geschlossen · öffnet heute um ${from}` : `Mittagspause · öffnet um ${from}` };
+    }
+    if (z.minutes < toMin(to)) return { open: true, text: `Jetzt geöffnet · bis ${to}` };
+  }
+  for (let k = 1; k <= 14; k++) {
+    const next = slotsOn(z, k);
+    if (next.length) {
+      const when = k === 1 ? 'morgen' : DAY_NAMES[new Date(z.day + k * 864e5).getUTCDay()];
+      return { open: false, text: `Geschlossen · öffnet ${when} um ${next[0][0]}` };
+    }
+  }
+  return { open: false, text: 'Zurzeit geschlossen' };
+}
+
+function updateOpening() {
+  const s = openingStatus();
+  document.querySelectorAll('[data-open-status]').forEach(el => {
+    el.textContent = s.text;
+    el.classList.toggle('open', s.open);
+    el.hidden = false;
+  });
+  const wd = DAYS[zurichNow().weekday];
+  document.querySelectorAll('#hours tr').forEach(tr => {
+    const isToday = tr.dataset.tage.split(' ').includes(wd);
+    tr.classList.toggle('today', isToday);
+    if (isToday) tr.setAttribute('aria-current', 'date'); else tr.removeAttribute('aria-current');
+  });
+}
+updateOpening();
+// Jede Minute aktualisieren (auf den Minutenwechsel abgestimmt) und beim Zurückkehren in den Tab
+setTimeout(() => { updateOpening(); setInterval(updateOpening, 60000); }, 60000 - Date.now() % 60000 + 50);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) updateOpening(); });
 document.getElementById('year').textContent = new Date().getFullYear();
 
 // Mobiles Menü
