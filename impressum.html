@@ -17,7 +17,7 @@
 <meta property="og:image:alt" content="Ladenfront von Mode Suozzi mit grünem Vordach an der Ecke Zentralstrasse">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#273837">
-<meta name="build" content="9666d009a385d52c">
+<meta name="build" content="82a27dc15fc8f91d">
 <link rel="icon" href="images/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -59,7 +59,10 @@
   }
   *, *::before, *::after { box-sizing: inherit; }
   html { scroll-behavior: smooth; scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 72px); }
-  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+  }
   body {
     margin: 0; background: var(--chalk); color: var(--ink);
     font: 400 17px/1.6 "Jost", "Helvetica Neue", Arial, sans-serif;
@@ -67,7 +70,10 @@
   }
   img { max-width: 100%; height: auto; display: block; }
   a { color: inherit; }
-  a:focus-visible, button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+  /* Fokus für alle bedienbaren Elemente: auf hellem Grund --accent (5,1:1), auf dunklem Grund --gold-on-dark (6:1) */
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  header :focus-visible, .hero :focus-visible, footer :focus-visible { outline-color: var(--gold-on-dark); }
+  iframe:focus-visible { outline-offset: 0; }
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
   h1, h2, h3 { font-family: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif; font-weight: 400; line-height: 1.1; margin: 0; }
   .wrap { width: min(1120px, 100% - 48px); margin-inline: auto; }
@@ -242,10 +248,10 @@
   .foot-hours div { display: flex; gap: 12px; }
   .foot-hours dt { min-width: 3.6em; color: #d6dcd8; }
   .foot-hours dd { margin: 0; }
-  footer .foot-grid a { display: inline-block; padding: 6px 0; }
+  footer .foot-grid a { display: inline-flex; align-items: center; min-height: 44px; }
   .foot-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 24px; margin-top: 36px; padding-top: 18px; border-top: 1px solid rgba(255, 255, 255, .12); }
   footer .legal-links { display: flex; gap: 20px; }
-  footer .legal-links a { display: inline-block; padding: 10px 0; }
+  footer .legal-links a { display: inline-flex; align-items: center; min-height: 44px; }
 
   .about .text p + p { margin-top: 0; }
 
