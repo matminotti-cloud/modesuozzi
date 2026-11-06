@@ -1,0 +1,3 @@
+# Testversion: Suchmaschinen ausgeschlossen (in der Admin-Konsole unter "Allgemein" ausschalten)
+User-agent: *
+Disallow: /
