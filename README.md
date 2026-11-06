@@ -8,8 +8,9 @@ Sito statico one-page per Mode Suozzi, Uster. I contenuti si modificano dalla co
 | --- | --- |
 | `content/site.json` | **Tutti i contenuti modificabili**: testi, marchi, assortimento, orari, contatti, percorsi delle foto. |
 | `lib/seite.php` | Modello della pagina: layout, stile e il poco JavaScript che serve (orari "aperto ora", stagione corrente). |
-| `lib/render.php` | Generatore: da `site.json` + modello crea `index.html`, `sitemap.xml`, `robots.txt` e `llms.txt`. |
-| `index.html`, `sitemap.xml`, `robots.txt`, `llms.txt` | **File generati, non modificarli a mano**: vengono riscritti a ogni salvataggio. |
+| `lib/render.php` | Generatore: da `site.json` + modello crea `index.html`, `impressum.html`, `datenschutz.html`, `sitemap.xml`, `robots.txt` e `llms.txt`. |
+| `lib/seiten/impressum.php`, `lib/seiten/datenschutz.php` | Testi di Impressum e Datenschutz (bozze con segnaposto `TODO: vom Inhaber prüfen`, da far verificare al proprietario). |
+| `index.html`, `impressum.html`, `datenschutz.html`, `sitemap.xml`, `robots.txt`, `llms.txt` | **File generati, non modificarli a mano**: vengono riscritti a ogni salvataggio. |
 | `images/` | Logo e foto. Gli upload dalla console finiscono qui. |
 | `.pages.yml` | Configurazione della console admin (campi, etichette in tedesco per il negozio). |
 
@@ -44,7 +45,7 @@ Ogni volta che si salva (da `admin.php` o da Pages CMS) i file vengono rigenerat
 Sull'hosting IPS.ch il sito si modifica da `https://modesuozzi.ch/admin.php`. Serve PHP 7.4 o superiore. Interfaccia in tedesco, con gli stessi campi della console Pages CMS.
 
 1. Carica via FTP tutto il contenuto del repository nella cartella del sito (di solito `public_html` o `httpdocs`).
-2. Verifica che PHP possa scrivere nella cartella principale (per `index.html`, `sitemap.xml`, `robots.txt`, `llms.txt`), in `content/` e in `images/`. Su un hosting condiviso di solito è già così; altrimenti imposta i permessi a 755 (cartelle) e 644 (file).
+2. Verifica che PHP possa scrivere nella cartella principale (per `index.html`, `impressum.html`, `datenschutz.html`, `sitemap.xml`, `robots.txt`, `llms.txt`), in `content/` e in `images/`. Su un hosting condiviso di solito è già così; altrimenti imposta i permessi a 755 (cartelle) e 644 (file).
 3. Apri `admin.php`: alla prima apertura crea un codice di configurazione nel file `admin-data/setup-code.php`. Scarica il file via FTP, copia il codice (seconda riga), inseriscilo nella pagina e scegli la password (minimo 10 caratteri). Senza accesso FTP nessuno può impostare la password; dopo l'uso il file viene cancellato.
 
 Cosa fa:

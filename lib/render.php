@@ -5,6 +5,8 @@
  *   index.html   Seite mit allen Inhalten direkt im HTML (lesbar für Google und
  *                KI-Suchmaschinen, die kein JavaScript ausführen) und strukturierten
  *                Daten (schema.org) für den Laden
+ *   impressum.html, datenschutz.html
+ *                rechtliche Seiten im gleichen Layout (Texte in lib/seiten/)
  *   sitemap.xml  für Suchmaschinen
  *   robots.txt   erlaubt allen Crawlern den Zugriff (in der Testversion: keinem)
  *   llms.txt     kompakte Zusammenfassung für KI-Assistenten (llmstxt.org)
@@ -23,7 +25,8 @@ date_default_timezone_set('Europe/Zurich');
 
 const MS_WEEKDAYS = ['Mo' => 'Monday', 'Di' => 'Tuesday', 'Mi' => 'Wednesday', 'Do' => 'Thursday', 'Fr' => 'Friday', 'Sa' => 'Saturday', 'So' => 'Sunday'];
 const MS_DEFAULT_URL = 'https://www.modesuozzi.ch/';
-const MS_OUTPUT = ['index.html', 'sitemap.xml', 'robots.txt', 'llms.txt'];
+const MS_PAGES = ['index.html' => 'index', 'impressum.html' => 'impressum', 'datenschutz.html' => 'datenschutz'];
+const MS_OUTPUT = ['index.html', 'impressum.html', 'datenschutz.html', 'sitemap.xml', 'robots.txt', 'llms.txt'];
 
 // ---------------------------------------------------------------- Hilfsfunktionen
 
@@ -246,9 +249,13 @@ function ms_robots(array $c, $base)
 
 function ms_sitemap($base)
 {
+    $urls = '';
+    foreach (array_keys(MS_PAGES) as $file) {
+        $urls .= "  <url><loc>" . ms_e($file === 'index.html' ? $base : $base . $file) . "</loc><lastmod>" . date('Y-m-d') . "</lastmod></url>\n";
+    }
     return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         . "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n"
-        . "  <url><loc>" . ms_e($base) . "</loc><lastmod>" . date('Y-m-d') . "</lastmod></url>\n"
+        . $urls
         . "</urlset>\n";
 }
 
@@ -330,7 +337,7 @@ function ms_llms(array $c, $base)
 function ms_build_id(array $c)
 {
     $tpl = '';
-    foreach ([__FILE__, __DIR__ . '/seite.php'] as $f) {
+    foreach (array_merge([__FILE__, __DIR__ . '/seite.php'], glob(__DIR__ . '/seiten/*.php') ?: []) as $f) {
         $tpl .= str_replace("\r\n", "\n", (string) @file_get_contents($f));
     }
     return substr(sha1(json_encode($c) . $tpl), 0, 16);
@@ -376,7 +383,7 @@ function ms_write(string $file, string $content)
 }
 
 /**
- * Schreibt index.html, sitemap.xml, robots.txt und llms.txt nach $root.
+ * Schreibt die Seiten (MS_PAGES), sitemap.xml, robots.txt und llms.txt nach $root.
  * Gibt true zurück oder false mit einer Fehlermeldung in $error.
  */
 function ms_render_site(string $root, &$error = null)
@@ -386,7 +393,7 @@ function ms_render_site(string $root, &$error = null)
         return false;
     }
     $base = ms_base_url($c);
-    $R = [
+    $common = [
         'root' => $root,
         'base' => $base,
         'build' => ms_build_id($c),
@@ -396,19 +403,20 @@ function ms_render_site(string $root, &$error = null)
         'season' => ms_season_now($c),
     ];
 
-    ob_start();
-    try {
-        include __DIR__ . '/seite.php';
-        $html = (string) ob_get_clean();
-    } catch (Throwable $t) {
-        ob_end_clean();
-        $error = 'Fehler in der Vorlage lib/seite.php: ' . $t->getMessage();
-        return false;
+    $files = [];
+    $changed = !is_file("$root/sitemap.xml");
+    foreach (MS_PAGES as $file => $page) {
+        $html = ms_render_page($c, $common + ['page' => $page], $error);
+        if ($html === null) {
+            return false;
+        }
+        $files[$file] = $html;
+        $changed = $changed || (string) @file_get_contents("$root/$file") !== $html;
     }
-
-    $files = ['index.html' => $html, 'robots.txt' => ms_robots($c, $base), 'llms.txt' => ms_llms($c, $base)];
-    // Die Sitemap bekommt nur ein neues Datum, wenn sich die Seite wirklich geändert hat.
-    if (!is_file("$root/sitemap.xml") || (string) @file_get_contents("$root/index.html") !== $html) {
+    $files['robots.txt'] = ms_robots($c, $base);
+    $files['llms.txt'] = ms_llms($c, $base);
+    // Die Sitemap bekommt nur ein neues Datum, wenn sich eine Seite wirklich geändert hat.
+    if ($changed) {
         $files['sitemap.xml'] = ms_sitemap($base);
     }
     foreach ($files as $name => $content) {
@@ -418,6 +426,20 @@ function ms_render_site(string $root, &$error = null)
         }
     }
     return true;
+}
+
+/** Eine Seite aus lib/seite.php erzeugen; null mit Fehlermeldung in $error, wenn die Vorlage scheitert. */
+function ms_render_page(array $c, array $R, &$error = null)
+{
+    ob_start();
+    try {
+        include __DIR__ . '/seite.php';
+        return (string) ob_get_clean();
+    } catch (Throwable $t) {
+        ob_end_clean();
+        $error = 'Fehler in der Vorlage lib/seite.php (' . $R['page'] . '): ' . $t->getMessage();
+        return null;
+    }
 }
 
 if (PHP_SAPI === 'cli' && realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === __FILE__) {

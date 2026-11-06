@@ -3,7 +3,7 @@
  * Admin-Konsole für modesuozzi.ch
  *
  * Bearbeitet content/site.json, lädt Bilder nach images/ hoch und erzeugt
- * danach index.html, sitemap.xml, robots.txt und llms.txt neu (lib/render.php).
+ * danach index.html, impressum.html, datenschutz.html, sitemap.xml, robots.txt und llms.txt neu (lib/render.php).
  * Voraussetzungen: PHP 7.4 oder neuer, Schreibrechte für den Hauptordner,
  * content/, images/ und admin-data/ (wird beim ersten Aufruf angelegt).
  *

@@ -1,8 +1,9 @@
 <?php
 /*
- * Vorlage für index.html. Wird von lib/render.php mit den Inhalten aus
- * content/site.json befüllt – nicht direkt aufrufen.
- * Verfügbar: $c (Inhalte), $R (berechnete Werte, siehe ms_render_site).
+ * Vorlage für index.html, impressum.html und datenschutz.html. Wird von
+ * lib/render.php mit den Inhalten aus content/site.json befüllt – nicht direkt aufrufen.
+ * Verfügbar: $c (Inhalte), $R (berechnete Werte, siehe ms_render_site; $R['page'] = welche Seite).
+ * Die Texte der rechtlichen Seiten stehen in lib/seiten/.
  */
 if (!isset($R, $c)) {
     http_response_code(404);
@@ -18,8 +19,22 @@ $img = function ($path, $altPath, $extra = '') use ($c, $R) {
     $src = ms_str($c, $path);
     return '<img src="' . ms_e(ms_src($src)) . '" alt="' . ms_e(ms_str($c, $altPath)) . '"' . ms_size_attr($R['root'], $src) . $extra . '>';
 };
-$title = ms_str($c, 'seo.titel') ?: (ms_str($c, 'besuch.firma') ?: 'Mode Suozzi');
+$page = $R['page'] ?? 'index';
+$isHome = $page === 'index';
+$home = $isHome ? '' : './'; // Links zu Abschnitten der Startseite
+$firma = ms_str($c, 'besuch.firma') ?: 'Mode Suozzi';
+$legal = [
+    'impressum' => ['Impressum', "Impressum von $firma, " . ms_str($c, 'besuch.strasse') . ', ' . ms_str($c, 'besuch.ort') . '.'],
+    'datenschutz' => ['Datenschutzerklärung', "Datenschutzerklärung von $firma: welche Daten beim Besuch der Website bearbeitet werden, auch durch eingebundene Dienste von Google."],
+];
+$title = ms_str($c, 'seo.titel') ?: $firma;
 $desc = ms_str($c, 'seo.beschreibung');
+$canonical = $R['base'];
+if (!$isHome) {
+    $title = $legal[$page][0] . ' – ' . $firma;
+    $desc = $legal[$page][1];
+    $canonical = $R['base'] . $page . '.html';
+}
 $ogImage = ms_abs(ms_str($c, 'hero.bild'), $R['base']);
 $address = implode(', ', array_filter([ms_str($c, 'besuch.firma'), ms_str($c, 'besuch.strasse'), ms_str($c, 'besuch.ort')]));
 $mapSrc = 'https://www.google.com/maps?q=' . rawurlencode($address) . '&output=embed';
@@ -54,13 +69,13 @@ $hasHours = (bool) array_filter($week);
 <?php else: ?>
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <?php endif; ?>
-<link rel="canonical" href="<?= ms_e($R['base']) ?>">
+<link rel="canonical" href="<?= ms_e($canonical) ?>">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="de_CH">
 <meta property="og:site_name" content="<?= $t('besuch.firma') ?>">
 <meta property="og:title" content="<?= ms_e($title) ?>">
 <meta property="og:description" content="<?= ms_e($desc) ?>">
-<meta property="og:url" content="<?= ms_e($R['base']) ?>">
+<meta property="og:url" content="<?= ms_e($canonical) ?>">
 <?php if ($ogImage !== ''): ?>
 <meta property="og:image" content="<?= ms_e($ogImage) ?>">
 <meta property="og:image:alt" content="<?= $t('hero.bild_alt') ?>">
@@ -72,10 +87,12 @@ $hasHours = (bool) array_filter($week);
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400&family=Jost:wght@400;500&display=swap" rel="stylesheet">
+<?php if ($isHome): ?>
 <script type="application/ld+json">
 <?= $R['jsonld'] ?>
 
 </script>
+<?php endif; ?>
 <style>
   :root {
     --brand: #273837;
@@ -122,6 +139,7 @@ $hasHours = (bool) array_filter($week);
   img { max-width: 100%; display: block; }
   a { color: inherit; }
   a:focus-visible, button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
   h1, h2, h3 { font-family: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif; font-weight: 400; line-height: 1.1; margin: 0; }
   .wrap { width: min(1120px, 100% - 48px); margin-inline: auto; }
 
@@ -135,10 +153,10 @@ $hasHours = (bool) array_filter($week);
   .logo { display: flex; align-items: center; text-decoration: none; }
   .logo img { height: 52px; width: auto; }
   .logo span { font-family: "Bodoni Moda", Georgia, serif; font-size: 1.5rem; color: var(--gold-on-dark); }
-  nav { margin-left: auto; }
-  nav ul { list-style: none; display: flex; gap: 28px; margin: 0; padding: 0; }
-  nav a { text-decoration: none; font-size: .95rem; color: #d6dcd8; padding: 6px 0; border-bottom: 1px solid transparent; }
-  nav a:hover, nav a[aria-current="true"] { color: var(--gold-on-dark); border-bottom-color: var(--gold-on-dark); }
+  #nav { margin-left: auto; }
+  #nav ul { list-style: none; display: flex; gap: 28px; margin: 0; padding: 0; }
+  #nav a { text-decoration: none; font-size: .95rem; color: #d6dcd8; padding: 6px 0; border-bottom: 1px solid transparent; }
+  #nav a:hover, #nav a[aria-current="true"] { color: var(--gold-on-dark); border-bottom-color: var(--gold-on-dark); }
   .bar-end { display: flex; align-items: center; gap: 10px; }
   .call-btn {
     display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; white-space: nowrap;
@@ -150,10 +168,10 @@ $hasHours = (bool) array_filter($week);
   .menu-btn { display: none; min-height: 44px; background: none; border: 1px solid rgba(176, 151, 76, .5); color: var(--gold-on-dark); font: inherit; padding: 6px 14px; border-radius: 2px; cursor: pointer; }
   @media (max-width: 900px) {
     .menu-btn { display: block; }
-    nav { position: absolute; left: 0; right: 0; top: 100%; background: var(--brand); border-bottom: 1px solid rgba(176, 151, 76, .35); display: none; }
-    nav.open { display: block; }
-    nav ul { flex-direction: column; gap: 0; padding: 8px 24px 16px; }
-    nav a { display: block; padding: 12px 0; font-size: 1.05rem; }
+    #nav { position: absolute; left: 0; right: 0; top: 100%; background: var(--brand); border-bottom: 1px solid rgba(176, 151, 76, .35); display: none; }
+    #nav.open { display: block; }
+    #nav ul { flex-direction: column; gap: 0; padding: 8px 24px 16px; }
+    #nav a { display: block; padding: 12px 0; font-size: 1.05rem; }
     .logo { margin-right: auto; }
   }
   @media (max-width: 400px) {
@@ -279,26 +297,42 @@ $hasHours = (bool) array_filter($week);
   footer { background: var(--brand-deep); color: #b7c0bc; padding: 40px 0; font-size: .9rem; }
   footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
   footer a { color: var(--gold-on-dark); }
+  footer .legal-links { display: flex; gap: 20px; }
 
   .about .text p + p { margin-top: 0; }
+
+  /* Impressum, Datenschutz */
+  .legal { padding: 72px 0 96px; }
+  .legal .wrap { max-width: 760px; }
+  .legal h1 { font-size: clamp(2.2rem, 5vw, 3.2rem); margin-bottom: 16px; }
+  .legal h2 { font-size: 1.45rem; margin: 44px 0 12px; }
+  .legal p, .legal li { color: var(--muted); }
+  .legal p { margin: 0 0 12px; }
+  .legal ul { padding-left: 1.2em; margin: 0 0 12px; }
+  .legal address { font-style: normal; color: var(--ink); }
+  .legal a { color: var(--accent); text-underline-offset: 3px; }
+  .legal .lead { font-size: 1.05rem; }
+  /* Platzhalter, die der Inhaber noch ausfüllen bzw. prüfen muss */
+  .todo { background: rgba(176, 151, 76, .18); color: var(--ink); padding: 1px 6px; border-radius: 2px; }
+  .todo-box { border-left: 3px solid var(--gold); background: rgba(176, 151, 76, .1); color: var(--ink); padding: 12px 16px; margin: 24px 0; font-size: .95rem; }
 </style>
 </head>
 <body data-saison="<?= ms_e($seasonSetting) ?>">
 
 <header>
   <div class="wrap bar">
-    <a class="logo" href="#top" aria-label="<?= $t('besuch.firma') ?>, zum Seitenanfang">
+    <a class="logo" href="<?= $isHome ? '#top' : './' ?>" aria-label="<?= $t('besuch.firma') ?>, <?= $isHome ? 'zum Seitenanfang' : 'zur Startseite' ?>">
       <img src="images/logo.png" alt="<?= $t('besuch.firma') ?>"<?= ms_size_attr($R['root'], 'images/logo.png') ?>>
     </a>
     <nav id="nav" aria-label="Hauptnavigation">
       <ul>
-        <li><a href="#sortiment"><?= $t('sortiment.titel') ?: 'Sortiment' ?></a></li>
-        <li><a href="#marken">Marken</a></li>
-        <li><a href="#ueber-uns"><?= $t('ueber_uns.titel') ?: 'Über uns' ?></a></li>
+        <li><a href="<?= $home ?>#sortiment"><?= $t('sortiment.titel') ?: 'Sortiment' ?></a></li>
+        <li><a href="<?= $home ?>#marken">Marken</a></li>
+        <li><a href="<?= $home ?>#ueber-uns"><?= $t('ueber_uns.titel') ?: 'Über uns' ?></a></li>
 <?php if ($R['tour']): ?>
-        <li><a href="#rundgang">Rundgang</a></li>
+        <li><a href="<?= $home ?>#rundgang">Rundgang</a></li>
 <?php endif; ?>
-        <li><a href="#besuch"><?= $t('besuch.titel') ?: 'Besuch' ?></a></li>
+        <li><a href="<?= $home ?>#besuch"><?= $t('besuch.titel') ?: 'Besuch' ?></a></li>
       </ul>
     </nav>
     <div class="bar-end">
@@ -310,6 +344,13 @@ $hasHours = (bool) array_filter($week);
   </div>
 </header>
 
+<?php if (!$isHome): ?>
+<main id="top" class="legal">
+  <div class="wrap">
+<?php include __DIR__ . '/seiten/' . $page . '.php'; ?>
+  </div>
+</main>
+<?php else: ?>
 <main id="top">
   <section class="hero">
     <div class="wrap hero-grid">
@@ -466,6 +507,7 @@ $hasHours = (bool) array_filter($week);
     </div>
   </section>
 </main>
+<?php endif; ?>
 
 <footer>
   <div class="wrap">
@@ -473,6 +515,10 @@ $hasHours = (bool) array_filter($week);
 <?php if ($R['tel']): ?>
     <a href="tel:<?= ms_e($R['tel']) ?>"><?= $t('besuch.telefon') ?></a>
 <?php endif; ?>
+    <nav class="legal-links" aria-label="Rechtliches">
+      <a href="impressum.html"<?= $page === 'impressum' ? ' aria-current="page"' : '' ?>>Impressum</a>
+      <a href="datenschutz.html"<?= $page === 'datenschutz' ? ' aria-current="page"' : '' ?>>Datenschutz</a>
+    </nav>
   </div>
 </footer>
 
