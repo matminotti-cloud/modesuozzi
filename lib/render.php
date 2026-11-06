@@ -296,7 +296,7 @@ function ms_jsonld(array $c, $base)
 
     $store['brand'] = array_map(function ($b) {
         $o = ['@type' => 'Brand', 'name' => trim((string) $b['name'])];
-        if (ms_is_remote((string) ($b['link'] ?? ''))) {
+        if (ms_is_remote((string) ($b['link'] ?? '')) && empty($b['pruefen'])) { // ungeprüfte Links (z. B. Händler) nicht als offizielle Marken-Website angeben
             $o['url'] = $b['link'];
         }
         return $o;
