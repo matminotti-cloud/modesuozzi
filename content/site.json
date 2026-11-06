@@ -42,9 +42,9 @@
   },
   "ueber_uns": {
     "titel": "Über uns",
-    "bild": "https://www.modesuozzi.ch/images/galerie/suozzis_klein_.jpg",
-    "bild_alt": "Familie Suozzi, Inhaber von Mode Suozzi",
-    "bildunterschrift": "Die Inhaber, Familie Suozzi",
+    "bild": "/images/inhaber.webp",
+    "bild_alt": "Der Inhaber von Mode Suozzi im Laden, lächelnd, mit einem hellblauen Hemd in der Hand, vor Regalen mit Hemden und Anzügen",
+    "bildunterschrift": "Der Inhaber in seinem Laden an der Zentralstrasse",
     "text": "Seit 55 Jahren kleiden wir Männer aus Uster und dem Zürcher Oberland ein – an der Zentralstrasse 1, direkt am Sternenplatz.\n\nAls Familiengeschäft setzen wir auf italienische Qualität, ehrliche Beratung und Kundinnen und Kunden, die immer wieder kommen.",
     "zitat": "„Wir freuen uns auf Ihren Besuch!“"
   },
