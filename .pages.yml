@@ -64,13 +64,6 @@ content:
           - name: bild_alt
             label: Bildbeschreibung (für Blinde und Google)
             type: string
-          - name: hinweis_titel
-            label: Hinweis auf dem Bild – Titel
-            description: z. B. „Beachten Sie unser Herbstfenster!“ – leer lassen, um den Hinweis auszublenden.
-            type: string
-          - name: hinweis_text
-            label: Hinweis auf dem Bild – Text
-            type: string
 
       - name: sortiment
         label: Sortiment
@@ -84,7 +77,7 @@ content:
             type: text
           - name: aktuelle_saison
             label: Aktuelle Saison hervorheben
-            description: „automatisch“ = März–August Frühling/Sommer, September–Februar Herbst/Winter.
+            description: „automatisch“ = März–August Frühling/Sommer, September–Februar Herbst/Winter. Gilt auch für den Hinweis „Neu im Schaufenster“ unter dem Titelbild.
             type: select
             options:
               values:

@@ -62,15 +62,13 @@ $SCHEMA = [
         f('text', 'Einleitung', 'text', ['rows' => 3]),
         f('bild', 'Titelbild', 'image', ['help' => 'Querformat, mindestens 1600 Pixel breit.']),
         f('bild_alt', 'Bildbeschreibung (für Blinde und Google)', 'string'),
-        f('hinweis_titel', 'Hinweis auf dem Bild – Titel', 'string', ['help' => 'z. B. „Beachten Sie unser Herbstfenster!“ – leer lassen, um den Hinweis auszublenden.']),
-        f('hinweis_text', 'Hinweis auf dem Bild – Text', 'string'),
     ]],
     'sortiment' => ['label' => 'Sortiment', 'fields' => [
         f('titel', 'Überschrift', 'string'),
         f('einleitung', 'Einleitung', 'text', ['rows' => 3]),
         f('aktuelle_saison', 'Aktuelle Saison hervorheben', 'select', [
             'options' => ['automatisch' => 'Automatisch', 'herbst_winter' => 'Herbst / Winter', 'fruehling_sommer' => 'Frühling / Sommer'],
-            'help' => '„Automatisch“ = März–August Frühling/Sommer, September–Februar Herbst/Winter.',
+            'help' => '„Automatisch“ = März–August Frühling/Sommer, September–Februar Herbst/Winter. Gilt auch für den Hinweis „Neu im Schaufenster“ unter dem Titelbild.',
         ]),
         f('herbst_winter', 'Herbst / Winter', 'list', ['fields' => $artikel, 'add' => 'Artikel hinzufügen']),
         f('fruehling_sommer', 'Frühling / Sommer', 'list', ['fields' => $artikel, 'add' => 'Artikel hinzufügen']),

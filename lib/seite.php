@@ -24,6 +24,8 @@ $ogImage = ms_abs(ms_str($c, 'hero.bild'), $R['base']);
 $address = implode(', ', array_filter([ms_str($c, 'besuch.firma'), ms_str($c, 'besuch.strasse'), ms_str($c, 'besuch.ort')]));
 $mapSrc = 'https://www.google.com/maps?q=' . rawurlencode($address) . '&output=embed';
 $seasons = ['herbst_winter' => ['Herbst / Winter', 'Ab Herbst'], 'fruehling_sommer' => ['Frühling / Sommer', 'Ab Frühling']];
+$seasonShort = ['herbst_winter' => 'Herbst/Winter', 'fruehling_sommer' => 'Frühling/Sommer'];
+$seasonSetting = ms_str($c, 'sortiment.aktuelle_saison') ?: 'automatisch';
 ?>
 <!DOCTYPE html>
 <html lang="de-CH">
@@ -143,20 +145,23 @@ $seasons = ['herbst_winter' => ['Herbst / Winter', 'Ab Herbst'], 'fruehling_somm
   .btn-light:hover { background: #c4ab5f; }
   .btn-ghost { border: 1px solid rgba(176, 151, 76, .6); color: #f4f2ee; }
   .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
-  .hero-img { position: relative; margin-bottom: 64px; }
+  .hero-img { margin: 0; }
   /* Querformat 16:9 (Tagesfoto der Ladenfront); Ausschnitt leicht nach oben, damit Vordach und Schrift im Bild bleiben */
   .hero-img img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; object-position: 50% 40%; border-radius: 2px; }
+  /* Hinweis unter dem Bild (Bildunterschrift statt Aufkleber auf dem Foto) */
   .window-note {
-    position: absolute; left: -24px; bottom: -64px; max-width: 300px; box-shadow: 0 8px 24px rgba(0, 0, 0, .25);
-    background: var(--gold); color: var(--brand-deep); padding: 14px 18px; border-radius: 2px;
-    font-family: "Bodoni Moda", Georgia, serif; font-size: 1.1rem; line-height: 1.3;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 20px;
+    margin-top: 12px; padding-top: 4px; border-top: 1px solid rgba(176, 151, 76, .35); color: #d6dcd8; font-size: .95rem;
   }
-  .window-note small { display: block; font-family: "Jost", Arial, sans-serif; font-size: .85rem; opacity: .85; margin-top: 4px; }
+  .window-note .note-title { font-family: "Bodoni Moda", Georgia, serif; font-style: italic; font-size: 1.15rem; color: var(--gold); padding: 8px 0; }
+  .window-note a { display: inline-flex; align-items: center; min-height: 44px; color: #f4f2ee; text-decoration: underline; text-decoration-color: rgba(176, 151, 76, .6); text-underline-offset: 4px; }
+  .window-note a:hover { color: var(--gold); text-decoration-color: currentColor; }
   @media (max-width: 860px) {
     .hero-grid { grid-template-columns: 1fr; gap: 0; min-height: 0; }
     .hero-text { padding: 56px 0 40px; }
-    .hero-img { margin: 0 -24px; }
-    .window-note { position: static; max-width: none; border-radius: 0; box-shadow: none; padding: 14px 24px; }
+    .hero-img { margin: 0 -24px; padding-bottom: 8px; }
+    .hero-img img { border-radius: 0; }
+    .window-note { margin: 0; padding: 6px 24px 0; border-top: 0; }
   }
 
   /* Sections */
@@ -230,7 +235,7 @@ $seasons = ['herbst_winter' => ['Herbst / Winter', 'Ab Herbst'], 'fruehling_somm
   .about .text p + p { margin-top: 0; }
 </style>
 </head>
-<body>
+<body data-saison="<?= ms_e($seasonSetting) ?>">
 
 <header>
   <div class="wrap bar">
@@ -269,13 +274,16 @@ $seasons = ['herbst_winter' => ['Herbst / Winter', 'Ab Herbst'], 'fruehling_somm
         </div>
       </div>
 <?php if ($has('hero.bild')): ?>
-      <div class="hero-img">
+      <figure class="hero-img">
         <?= $img('hero.bild', 'hero.bild_alt', ' fetchpriority="high"') ?>
 
-<?php if ($has('hero.hinweis_titel')): ?>
-        <p class="window-note"><span><?= $t('hero.hinweis_titel') ?></span><?php if ($has('hero.hinweis_text')): ?><small><?= $t('hero.hinweis_text') ?></small><?php endif; ?></p>
+        <figcaption class="window-note">
+          <span class="note-title">Neu im Schaufenster: <span data-season-short><?= $seasonShort[$R['season']] ?></span></span>
+<?php if ($R['tour']): ?>
+          <a href="#rundgang">Laden virtuell ansehen&nbsp;<span aria-hidden="true">→</span></a>
 <?php endif; ?>
-      </div>
+        </figcaption>
+      </figure>
 <?php endif; ?>
     </div>
   </section>
@@ -413,12 +421,21 @@ $seasons = ['herbst_winter' => ['Herbst / Winter', 'Ab Herbst'], 'fruehling_somm
 <script>
 // Inhalte stehen fertig im HTML. Das Skript ergänzt nur, was vom heutigen Datum abhängt.
 
+// Saison: März–August Frühling/Sommer, September–Februar Herbst/Winter (Monat nach Schweizer Zeit),
+// ausser in der Admin-Konsole ist eine Saison fest eingestellt.
+function currentSeason() {
+  const fixed = document.body.dataset.saison;
+  if (fixed === 'herbst_winter' || fixed === 'fruehling_sommer') return fixed;
+  const month = +new Intl.DateTimeFormat('en', { timeZone: 'Europe/Zurich', month: 'numeric' }).format(new Date());
+  return month >= 3 && month <= 8 ? 'fruehling_sommer' : 'herbst_winter';
+}
+const SEASON_SHORT = { herbst_winter: 'Herbst/Winter', fruehling_sommer: 'Frühling/Sommer' };
+document.querySelectorAll('[data-season-short]').forEach(el => { el.textContent = SEASON_SHORT[currentSeason()]; });
+
 // Sortiment: aktuelle Saison hervorheben
 const seasons = document.querySelector('.seasons');
 if (seasons) {
-  const month = new Date().getMonth() + 1;
-  let current = seasons.dataset.current;
-  if (current !== 'herbst_winter' && current !== 'fruehling_sommer') current = month >= 3 && month <= 8 ? 'fruehling_sommer' : 'herbst_winter';
+  const current = currentSeason();
   seasons.querySelectorAll('.season').forEach(art => {
     const key = art.dataset.season, isNow = key === current;
     art.classList.toggle('off', !isNow);
