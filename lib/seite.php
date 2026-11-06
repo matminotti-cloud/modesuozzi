@@ -144,7 +144,8 @@ $seasons = ['herbst_winter' => ['Herbst / Winter', 'Ab Herbst'], 'fruehling_somm
   .btn-ghost { border: 1px solid rgba(176, 151, 76, .6); color: #f4f2ee; }
   .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
   .hero-img { position: relative; margin-bottom: 64px; }
-  .hero-img img { display: block; width: 100%; height: auto; aspect-ratio: 1600 / 1143; object-fit: cover; object-position: center; }
+  /* Querformat 16:9 (Tagesfoto der Ladenfront); Ausschnitt leicht nach oben, damit Vordach und Schrift im Bild bleiben */
+  .hero-img img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; object-position: 50% 40%; border-radius: 2px; }
   .window-note {
     position: absolute; left: -24px; bottom: -64px; max-width: 300px; box-shadow: 0 8px 24px rgba(0, 0, 0, .25);
     background: var(--gold); color: var(--brand-deep); padding: 14px 18px; border-radius: 2px;

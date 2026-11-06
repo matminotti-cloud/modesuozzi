@@ -9,8 +9,8 @@
     "oberzeile": "Seit 55 Jahren am Sternenplatz",
     "titel": "Italienische Herrenmode in Uster.",
     "text": "Anzüge, Hemden, Strick und Schuhe von ausgewählten Marken – mit persönlicher Beratung im Familiengeschäft.",
-    "bild": "/images/schaufenster-abend.webp",
-    "bild_alt": "Beleuchtetes Schaufenster von Mode Suozzi am Abend, mit Anzügen, Jacken und Schuhen",
+    "bild": "/images/laden-tag.webp",
+    "bild_alt": "Ladenfront von Mode Suozzi mit grünem Vordach an der Ecke Zentralstrasse",
     "hinweis_titel": "Beachten Sie unser Herbstfenster!",
     "hinweis_text": "Wir freuen uns auf Ihren Besuch."
   },
@@ -77,8 +77,8 @@
       { "bezeichnung": "Samstag", "tage": ["Sa"], "zeiten": "08:30–16:00" },
       { "bezeichnung": "Sonntag", "tage": ["So"], "zeiten": "geschlossen" }
     ],
-    "laden_bild": "/images/laden-tag.webp",
-    "laden_bild_alt": "Ladenfront von Mode Suozzi mit grünem Vordach an der Ecke Zentralstrasse",
+    "laden_bild": "/images/schaufenster-abend.webp",
+    "laden_bild_alt": "Mode Suozzi am Abend: grün leuchtende Schrift über dem beleuchteten Schaufenster mit Anzügen, Jacken und Schuhen",
     "laden_titel": "Das Eckhaus mit dem grünen Vordach",
     "laden_text": "Zentralstrasse 1, direkt am Sternenplatz. Am Abend erkennen Sie uns an der grün leuchtenden Schrift."
   }
