@@ -2,9 +2,10 @@
 /**
  * Admin-Konsole für modesuozzi.ch
  *
- * Bearbeitet content/site.json und lädt Bilder nach images/ hoch.
- * Voraussetzungen: PHP 7.4 oder neuer, Schreibrechte für content/, images/
- * und das Verzeichnis admin-data/ (wird beim ersten Aufruf angelegt).
+ * Bearbeitet content/site.json, lädt Bilder nach images/ hoch und erzeugt
+ * danach index.html, sitemap.xml, robots.txt und llms.txt neu (lib/render.php).
+ * Voraussetzungen: PHP 7.4 oder neuer, Schreibrechte für den Hauptordner,
+ * content/, images/ und admin-data/ (wird beim ersten Aufruf angelegt).
  *
  * Beim ersten Aufruf wird ein Einrichtungscode in admin-data/setup-code.php
  * erzeugt (nur per FTP lesbar). Mit diesem Code wird das Passwort festgelegt;
@@ -36,6 +37,9 @@ const DAYS           = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 
 date_default_timezone_set('Europe/Zurich');
 
+define('MS_RENDER', true);
+require __DIR__ . '/lib/render.php';
+
 // ---------------------------------------------------------------- Felder
 
 function f($name, $label, $type, $opt = [])
@@ -50,6 +54,7 @@ $SCHEMA = [
         f('titel', 'Seitentitel (Browser-Tab und Google)', 'string', ['max' => 70]),
         f('beschreibung', 'Kurzbeschreibung für Google', 'text', ['max' => 170, 'rows' => 3]),
         f('testversion', 'Testversion (vor Google verbergen)', 'bool', ['help' => 'Ausschalten, sobald die Seite unter modesuozzi.ch live ist.']),
+        f('adresse', 'Adresse der Website', 'url', ['help' => 'z. B. https://www.modesuozzi.ch/ – wird Google und KI-Suchmaschinen als offizielle Adresse gemeldet.']),
     ]],
     'hero' => ['label' => 'Titelbereich', 'fields' => [
         f('oberzeile', 'Oberzeile', 'string'),
@@ -100,6 +105,8 @@ $SCHEMA = [
         f('telefon', 'Telefon', 'string', ['help' => 'z. B. +41 (0) 44 940 87 21']),
         f('fax', 'Fax (optional)', 'string'),
         f('email', 'E-Mail', 'email'),
+        f('google_maps', 'Eintrag in Google Maps', 'url', ['max' => 2000, 'help' => 'Link zum Laden in Google Maps. Hilft Google und KI-Assistenten, Website und Google-Eintrag zu verbinden.']),
+        f('koordinaten', 'Koordinaten (Breite, Länge)', 'string', ['placeholder' => '47.3477735, 8.7182642', 'help' => 'Für die Kartenposition in Suchmaschinen. In Google Maps: Rechtsklick auf den Laden, erste Zeile kopieren.']),
         f('oeffnungszeiten', 'Öffnungszeiten', 'list', ['add' => 'Zeile hinzufügen', 'fields' => [
             f('bezeichnung', 'Bezeichnung', 'string', ['placeholder' => 'z. B. Montag – Freitag']),
             f('zeiten', 'Zeiten', 'string', ['placeholder' => '09:00–12:00, 14:00–18:30 oder geschlossen']),
@@ -359,6 +366,12 @@ function write_content(array $data)
 {
     $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     return $json !== false && atomic_write(CONTENT_FILE, $json . "\n");
+}
+
+/** Erzeugt index.html usw. aus content/site.json neu. Gibt null oder eine Fehlermeldung zurück. */
+function publish_site()
+{
+    return ms_render_site(__DIR__, $err) ? null : $err;
 }
 
 function clean_value(array $f, $raw, $old, array &$errors, $where)
@@ -754,7 +767,8 @@ if ($authed) {
             } elseif (!write_content($new)) {
                 $errors[] = 'content/site.json konnte nicht gespeichert werden. Bitte die Schreibrechte auf dem Server prüfen.';
             } else {
-                flash('Gespeichert. Die Änderungen sind sofort auf der Website sichtbar.');
+                $err = publish_site();
+                flash($err ? 'Gespeichert, aber die Website konnte nicht aktualisiert werden: ' . $err : 'Gespeichert. Die Änderungen sind sofort auf der Website sichtbar.', $err ? 'err' : 'ok');
                 redirect();
             }
         }
@@ -770,7 +784,8 @@ if ($authed) {
         } elseif (!backup_current() || !write_content($data)) {
             $errors[] = 'Die Version konnte nicht wiederhergestellt werden. Bitte die Schreibrechte prüfen.';
         } else {
-            flash('Die Version vom ' . backup_label($file) . ' wurde wiederhergestellt.');
+            $err = publish_site();
+            flash('Die Version vom ' . backup_label($file) . ' wurde wiederhergestellt.' . ($err ? ' Die Website konnte aber nicht aktualisiert werden: ' . $err : ''), $err ? 'err' : 'ok');
             redirect();
         }
     }
@@ -935,6 +950,10 @@ if ($authed) {
     }
     if (!is_dir(BACKUP_DIR) || !is_writable(BACKUP_DIR)) {
         $problems[] = 'Der Ordner admin-data/ ist nicht beschreibbar – ohne Sicherungskopien wird nicht gespeichert.';
+    }
+    // z. B. nach einem FTP-Upload neuer Dateien: Website an den aktuellen Inhalt anpassen
+    if (ms_is_stale(__DIR__) && ($err = publish_site())) {
+        $problems[] = 'Die Website konnte nicht aktualisiert werden: ' . $err;
     }
 }
 $csrf = $_SESSION['csrf'];

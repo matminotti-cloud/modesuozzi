@@ -2,7 +2,8 @@
   "seo": {
     "titel": "Mode Suozzi – Herrenmode am Sternenplatz in Uster",
     "beschreibung": "Mode Suozzi, Zentralstrasse 1, 8610 Uster: italienische Herrenmode seit 55 Jahren. Anzüge, Hemden, Strick, Jeans und Schuhe von Pal Zileri, Paul & Shark, Gran Sasso, Trussardi und mehr.",
-    "testversion": true
+    "testversion": true,
+    "adresse": "https://www.modesuozzi.ch/"
   },
   "hero": {
     "oberzeile": "Seit 55 Jahren am Sternenplatz",
@@ -69,6 +70,8 @@
     "telefon": "+41 (0) 44 940 87 21",
     "fax": "+41 (0) 44 940 89 80",
     "email": "shop@modesuozzi.ch",
+    "google_maps": "https://maps.google.com/?cid=3759285247939141324",
+    "koordinaten": "47.3477735, 8.7182642",
     "oeffnungszeiten": [
       { "bezeichnung": "Montag – Freitag", "tage": ["Mo", "Di", "Mi", "Do", "Fr"], "zeiten": "09:00–12:00, 14:00–18:30" },
       { "bezeichnung": "Samstag", "tage": ["Sa"], "zeiten": "08:30–16:00" },

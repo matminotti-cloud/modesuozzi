@@ -39,6 +39,10 @@ content:
             label: Testversion (vor Google verbergen)
             description: Ausschalten, sobald die Seite unter modesuozzi.ch live ist.
             type: boolean
+          - name: adresse
+            label: Adresse der Website
+            description: z. B. https://www.modesuozzi.ch/ – wird Google und KI-Suchmaschinen als offizielle Adresse gemeldet.
+            type: string
 
       - name: hero
         label: Titelbereich
@@ -174,6 +178,14 @@ content:
           - { name: telefon, label: Telefon, type: string }
           - { name: fax, label: Fax (optional), type: string }
           - { name: email, label: E-Mail, type: string }
+          - name: google_maps
+            label: Eintrag in Google Maps
+            description: Link zum Laden in Google Maps. Hilft Google und KI-Assistenten, Website und Google-Eintrag zu verbinden.
+            type: string
+          - name: koordinaten
+            label: Koordinaten (Breite, Länge)
+            description: Für die Kartenposition in Suchmaschinen. In Google Maps Rechtsklick auf den Laden, erste Zeile kopieren.
+            type: string
           - name: oeffnungszeiten
             label: Öffnungszeiten
             type: object
