@@ -26,7 +26,9 @@ const KEEP_BACKUPS   = 30;
 const MAX_UPLOAD     = 8 * 1024 * 1024;
 const SESSION_IDLE   = 2 * 3600;
 const MAX_ATTEMPTS   = 5;    // Fehlversuche pro Adresse in 15 Minuten
-const GLOBAL_MAX     = 30;   // Fehlversuche insgesamt in 15 Minuten
+const GLOBAL_MAX     = 100;  // Fehlversuche insgesamt in 15 Minuten (gilt nicht für bekannte Geräte)
+const DEVICE_DAYS    = 90;   // so lange gilt ein Gerät nach erfolgreicher Anmeldung als bekannt
+const DEVICE_COOKIE  = 'ms_admin_device';
 const LOCK_SECONDS   = 15 * 60;
 const MIN_PASSWORD   = 10;
 const GUARD          = "<?php exit; ?>\n"; // Dateien in admin-data/ sind nie direkt lesbar
@@ -244,8 +246,18 @@ function slug($s)
 function client_key()
 {
     $ip = (string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
-    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
-        $ip = bin2hex(substr((string) inet_pton($ip), 0, 8)) . '::/64'; // IPv6: ganzes /64-Netz zählt als eine Adresse
+    $bin = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) ? (string) @inet_pton($ip) : '';
+    if (strlen($bin) === 16) {
+        $head12 = substr($bin, 0, 12);
+        if ($head12 === str_repeat("\0", 10) . "\xff\xff" || $head12 === "\x00\x64\xff\x9b" . str_repeat("\0", 8)) {
+            $ip = (string) inet_ntop(substr($bin, 12));      // IPv4-mapped (::ffff:a.b.c.d) oder NAT64 (64:ff9b::/96)
+        } elseif (substr($bin, 0, 2) === "\x20\x02") {
+            $ip = (string) inet_ntop(substr($bin, 2, 4));    // 6to4 (2002::/16)
+        } elseif ($head12 === str_repeat("\0", 12) || substr($bin, 0, 4) === "\x20\x01\x00\x00") {
+            $ip = bin2hex($bin);                             // IPv4-kompatibel bzw. Teredo: ganze Adresse
+        } else {
+            $ip = bin2hex(substr($bin, 0, 8)) . '::/64';     // natives IPv6: ganzes /64-Netz zählt als eine Adresse
+        }
     }
     return hash('sha256', $ip);
 }
@@ -491,35 +503,66 @@ function save_attempts(array $a)
  * Zählt einen Versuch, BEVOR das Passwort geprüft wird. Gibt eine Fehlermeldung
  * zurück, wenn die Anmeldung gesperrt ist (pro Adresse oder insgesamt).
  */
-function attempt_begin()
+function attempt_begin($knownDevice = false)
 {
-    return with_lock(function () {
+    return with_lock(function () use ($knownDevice) {
         $a = load_attempts();
         $k = client_key();
         $mine = $a[$k] ?? ['n' => 0, 't' => time()];
         $all = $a['*'] ?? ['n' => 0, 't' => time()];
-        if ($mine['n'] >= MAX_ATTEMPTS || $all['n'] >= GLOBAL_MAX) {
+        // Die Gesamtsperre gilt nicht für Geräte, die sich schon erfolgreich angemeldet haben:
+        // so kann ein Angreifer den Laden nicht aussperren.
+        $globalHit = !$knownDevice && $all['n'] >= GLOBAL_MAX;
+        if ($mine['n'] >= MAX_ATTEMPTS || $globalHit) {
             $until = ($mine['n'] >= MAX_ATTEMPTS ? $mine['t'] : $all['t']) + LOCK_SECONDS;
             return 'Zu viele Fehlversuche. Bitte in ' . max(1, (int) ceil(($until - time()) / 60)) . ' Minuten erneut versuchen.';
         }
         $a[$k] = ['n' => $mine['n'] + 1, 't' => time()];
-        $a['*'] = ['n' => $all['n'] + 1, 't' => time()];
+        if (!$knownDevice) {
+            $a['*'] = ['n' => $all['n'] + 1, 't' => time()];
+        }
         save_attempts($a);
         return null;
     });
 }
 
 /** Nach erfolgreicher Anmeldung: den eben gezählten Versuch zurücknehmen. */
-function attempt_success()
+function attempt_success($knownDevice = false)
 {
-    with_lock(function () {
+    with_lock(function () use ($knownDevice) {
         $a = load_attempts();
         unset($a[client_key()]);
-        if (isset($a['*'])) {
+        if (!$knownDevice && isset($a['*'])) {
             $a['*']['n'] = max(0, $a['*']['n'] - 1);
         }
         save_attempts($a);
     });
+}
+
+/** Signiertes Cookie für Geräte, die sich erfolgreich angemeldet haben. */
+function device_sig($exp, $secret)
+{
+    return hash_hmac('sha256', 'device|' . $exp, $secret);
+}
+
+function is_known_device($config)
+{
+    $c = (string) ($_COOKIE[DEVICE_COOKIE] ?? '');
+    if (empty($config['secret']) || !preg_match('/^(\d+)\.([a-f0-9]{64})$/', $c, $m) || (int) $m[1] < time()) {
+        return false;
+    }
+    return hash_equals(device_sig($m[1], $config['secret']), $m[2]);
+}
+
+function remember_device($config, $https)
+{
+    if (empty($config['secret'])) {
+        return;
+    }
+    $exp = time() + DEVICE_DAYS * 86400;
+    setcookie(DEVICE_COOKIE, $exp . '.' . device_sig($exp, $config['secret']), [
+        'expires' => $exp, 'path' => self_url(), 'secure' => $https, 'httponly' => true, 'samesite' => 'Strict',
+    ]);
 }
 
 /** Einrichtungscode: wird einmalig erzeugt und liegt nur auf dem Server (per FTP lesbar). */
@@ -541,9 +584,17 @@ function load_config()
     return is_array($c) && !empty($c['hash']) ? $c : null;
 }
 
-function save_password($password)
+/**
+ * Speichert das Passwort. $newSecret = true erneuert auch den Schlüssel für bekannte
+ * Geräte (beim Passwortwechsel), damit alte Geräte-Cookies ungültig werden.
+ * Gibt die neue Konfiguration zurück oder false.
+ */
+function save_password($password, $newSecret = false)
 {
-    return protected_write(CONFIG_FILE, json_encode(['hash' => password_hash($password, PASSWORD_DEFAULT)]));
+    $old = load_config();
+    $secret = (!$newSecret && !empty($old['secret'])) ? $old['secret'] : bin2hex(random_bytes(32));
+    $config = ['hash' => password_hash($password, PASSWORD_DEFAULT), 'secret' => $secret];
+    return protected_write(CONFIG_FILE, json_encode($config)) ? $config : false;
 }
 
 function check_new_password($pw, $repeat)
@@ -616,10 +667,11 @@ if ($action === 'setup' && !$config) {
     } elseif ($err = check_new_password($pw, (string) ($_POST['password2'] ?? ''))) {
         attempt_success();
         $errors[] = $err;
-    } elseif (!save_password($pw)) {
+    } elseif (!($saved = save_password($pw, true))) {
         $errors[] = 'Das Passwort konnte nicht gespeichert werden: Der Ordner admin-data/ ist auf dem Server nicht beschreibbar.';
     } else {
         attempt_success();
+        remember_device($saved, $https);
         @unlink(SETUP_FILE);
         session_regenerate_id(true);
         $_SESSION['auth'] = true;
@@ -630,13 +682,15 @@ if ($action === 'setup' && !$config) {
 }
 
 if ($action === 'login' && $config) {
-    if ($lock = attempt_begin()) {
+    $known = is_known_device($config);
+    if ($lock = attempt_begin($known)) {
         $errors[] = $lock;
     } elseif (password_verify((string) ($_POST['password'] ?? ''), $config['hash'])) {
-        attempt_success();
-        if (password_needs_rehash($config['hash'], PASSWORD_DEFAULT)) {
-            save_password((string) $_POST['password']);
+        attempt_success($known);
+        if (password_needs_rehash($config['hash'], PASSWORD_DEFAULT) || empty($config['secret'])) {
+            $config = save_password((string) $_POST['password']) ?: $config;
         }
+        remember_device($config, $https);
         session_regenerate_id(true);
         $_SESSION['auth'] = true;
         $_SESSION['last'] = time();
@@ -720,9 +774,10 @@ if ($authed) {
             $errors[] = 'Das aktuelle Passwort ist falsch.';
         } elseif ($err = check_new_password($pw, (string) ($_POST['password2'] ?? ''))) {
             $errors[] = $err;
-        } elseif (!save_password($pw)) {
+        } elseif (!($saved = save_password($pw, true))) {
             $errors[] = 'Das neue Passwort konnte nicht gespeichert werden.';
         } else {
+            remember_device($saved, $https);   // andere Geräte gelten danach nicht mehr als bekannt
             session_regenerate_id(true);
             flash('Das Passwort wurde geändert.');
             redirect();

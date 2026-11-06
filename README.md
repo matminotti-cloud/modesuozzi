@@ -39,7 +39,7 @@ Cosa fa:
 - salva i testi in `content/site.json`: le modifiche sono online subito, senza pubblicazione;
 - carica le foto in `images/` (solo JPG, PNG o WebP, verificati lato server; massimo 8 MB o il limite PHP dell'hosting, se più basso);
 - prima di ogni salvataggio crea una copia di sicurezza in `admin-data/backups/` (restano le ultime 30), ripristinabile dalla sezione *Frühere Versionen*;
-- blocca l'accesso per 15 minuti dopo 5 password sbagliate dallo stesso indirizzo, o dopo 30 in totale, e chiude la sessione dopo 2 ore di inattività. Se il negozio resta bloccato fuori, cancella `admin-data/attempts.php` via FTP.
+- blocca l'accesso per 15 minuti dopo 5 password sbagliate dallo stesso indirizzo, e per tutti i dispositivi nuovi dopo 100 errori in totale. I dispositivi che hanno già fatto accesso negli ultimi 90 giorni non subiscono il blocco globale, così un attacco non può chiudere fuori il negozio. Chiude la sessione dopo 2 ore di inattività. In caso di emergenza, cancella `admin-data/attempts.php` via FTP per togliere ogni blocco.
 
 `admin-data/` viene creata alla prima apertura, contiene password (hash), tentativi di accesso e backup ed è esclusa da git. **Password dimenticata:** cancella `admin-data/config.php` via FTP e riapri `admin.php` per sceglierne una nuova.
 
