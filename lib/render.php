@@ -107,8 +107,9 @@ function ms_slots($zeiten)
 function ms_zeiten_html($zeiten)
 {
     $parts = ms_slots($zeiten) ? preg_split('/\s*,\s*/u', $zeiten) : [$zeiten];
-    return implode('<br>', array_map(function ($t) {
-        return ms_e(preg_replace('/\s*[–—-]\s*/u', ' – ', $t, 1));
+    // Jede Zeitspanne als eigenes Element, getrennt durch ", " (für Screenreader und Kopieren; visuell ausgeblendet)
+    return implode('<span class="sr-only">, </span>', array_map(function ($t) {
+        return '<span class="slot">' . ms_e(preg_replace('/\s*[–—-]\s*/u', ' – ', trim($t), 1)) . '</span>';
     }, $parts));
 }
 

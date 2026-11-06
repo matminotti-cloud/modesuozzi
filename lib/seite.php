@@ -283,8 +283,12 @@ $hasHours = (bool) array_filter($week);
   .visit p { margin: 0 0 6px; }
   .hours { width: 100%; border-collapse: collapse; }
   .hours th, .hours td { text-align: left; font-weight: 400; padding: 8px 0; border-top: 1px solid var(--line); vertical-align: top; }
+  .hours th { padding-left: 12px; box-shadow: inset 3px 0 0 transparent; }
   .hours td { text-align: right; color: var(--muted); }
-  .hours tr.today th, .hours tr.today td { color: var(--ink); font-weight: 500; }
+  .hours .slot { display: block; }
+  .hours tr.today th, .hours tr.today td { color: var(--ink); font-weight: 600; }
+  .hours tr.today th { box-shadow: inset 3px 0 0 var(--gold); }
+  .visit .fax { font-size: .85rem; color: var(--muted); }
   .status { display: inline-flex; align-items: center; gap: 8px; margin: 16px 0 0; font-size: .95rem; }
   .status[hidden] { display: none; }
   .status::before { content: ""; flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--pin); }
@@ -481,7 +485,7 @@ $hasHours = (bool) array_filter($week);
             <p style="margin-top:16px">Telefon <a href="tel:<?= ms_e($R['tel']) ?>"><?= $t('besuch.telefon') ?></a></p>
 <?php endif; ?>
 <?php if ($has('besuch.fax')): ?>
-            <p>Fax <?= $t('besuch.fax') ?></p>
+            <p class="fax">Fax <?= $t('besuch.fax') ?></p>
 <?php endif; ?>
 <?php if ($has('besuch.email')): ?>
             <p>E-Mail <a href="mailto:<?= $t('besuch.email') ?>"><?= $t('besuch.email') ?></a></p>
