@@ -12,6 +12,7 @@ Sito statico one-page per Mode Suozzi, Uster. I contenuti si modificano dalla co
 | `lib/seiten/impressum.php`, `lib/seiten/datenschutz.php` | Testi di Impressum e Datenschutz (bozze con segnaposto `TODO: vom Inhaber prüfen`, da far verificare al proprietario). |
 | `index.html`, `impressum.html`, `datenschutz.html`, `sitemap.xml`, `robots.txt`, `llms.txt` | **File generati, non modificarli a mano**: vengono riscritti a ogni salvataggio. |
 | `images/` | Logo e foto. Gli upload dalla console finiscono qui. |
+| `fonts/` | Font del sito (Bodoni Moda, Jost) in WOFF2, solo caratteri latini, con licenza OFL. Ospitati qui per non caricare nulla da Google. |
 | `.pages.yml` | Configurazione della console admin (campi, etichette in tedesco per il negozio). |
 
 ## SEO e ricerca con l'intelligenza artificiale

@@ -641,7 +641,7 @@ header('Referrer-Policy: same-origin');
 header('X-Robots-Tag: noindex, nofollow');
 header('Cache-Control: no-store');
 $NONCE = base64_encode(random_bytes(16));
-header("Content-Security-Policy: default-src 'self'; img-src 'self' https: data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'nonce-$NONCE'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'");
+header("Content-Security-Policy: default-src 'self'; img-src 'self' https: data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'nonce-$NONCE'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'");
 
 $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
 session_name('ms_admin');
@@ -970,10 +970,11 @@ $csrf = $_SESSION['csrf'];
 <meta name="robots" content="noindex, nofollow">
 <title>Admin · Mode Suozzi</title>
 <link rel="icon" href="images/logo.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400&family=Jost:wght@400;500&display=swap" rel="stylesheet">
 <style>
+  /* Schriften lokal (fonts/, SIL Open Font License): keine Verbindung zu Google beim Seitenaufruf */
+  @font-face { font-family: "Bodoni Moda"; font-style: normal; font-weight: 400 600; font-display: swap; src: url("fonts/bodoni-moda-latin.woff2") format("woff2"); }
+  @font-face { font-family: "Bodoni Moda"; font-style: italic; font-weight: 400; font-display: swap; src: url("fonts/bodoni-moda-italic-latin.woff2") format("woff2"); }
+  @font-face { font-family: "Jost"; font-style: normal; font-weight: 400 600; font-display: swap; src: url("fonts/jost-latin.woff2") format("woff2"); }
   :root {
     --brand: #273837; --brand-deep: #1c2928; --gold: #b0974c; --gold-hover: #c4ab5f;
     --bg: #f3f1ed; --paper: #ffffff; --ink: #1c2626; --muted: #56625f; --line: rgba(39, 56, 55, .16);

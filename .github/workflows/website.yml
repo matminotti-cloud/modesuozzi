@@ -44,7 +44,7 @@ jobs:
       - name: Dateien für GitHub Pages zusammenstellen
         run: |
           mkdir _site
-          cp -r index.html impressum.html datenschutz.html sitemap.xml robots.txt llms.txt images _site/
+          cp -r index.html impressum.html datenschutz.html sitemap.xml robots.txt llms.txt images fonts _site/
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

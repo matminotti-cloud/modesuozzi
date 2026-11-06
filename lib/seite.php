@@ -84,9 +84,8 @@ $hasHours = (bool) array_filter($week);
 <meta name="theme-color" content="#273837">
 <meta name="build" content="<?= ms_e($R['build']) ?>">
 <link rel="icon" href="images/logo.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400&family=Jost:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
 <?php if ($isHome): ?>
 <script type="application/ld+json">
 <?= $R['jsonld'] ?>
@@ -94,6 +93,10 @@ $hasHours = (bool) array_filter($week);
 </script>
 <?php endif; ?>
 <style>
+  /* Schriften lokal (fonts/, SIL Open Font License): keine Verbindung zu Google beim Seitenaufruf */
+  @font-face { font-family: "Bodoni Moda"; font-style: normal; font-weight: 400 600; font-display: swap; src: url("fonts/bodoni-moda-latin.woff2") format("woff2"); }
+  @font-face { font-family: "Bodoni Moda"; font-style: italic; font-weight: 400; font-display: swap; src: url("fonts/bodoni-moda-italic-latin.woff2") format("woff2"); }
+  @font-face { font-family: "Jost"; font-style: normal; font-weight: 400 600; font-display: swap; src: url("fonts/jost-latin.woff2") format("woff2"); }
   :root {
     --brand: #273837;
     --gold: #b0974c;

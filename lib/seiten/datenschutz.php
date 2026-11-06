@@ -24,7 +24,7 @@ if (!isset($R, $c)) {
     <h2>Besuch dieser Website</h2>
     <!-- TODO: vom Inhaber prüfen – Name und Sitz des Hosting-Anbieters, Speicherdauer der Server-Protokolle beim Anbieter erfragen. -->
     <p>Beim Aufruf der Website speichert der Server unseres Hosting-Anbieters (<span class="todo">[Name und Sitz des Hosting-Anbieters]</span>) automatisch technische Angaben in Protokolldateien: IP-Adresse, Datum und Uhrzeit, aufgerufene Seite, Browser und Betriebssystem. Diese Daten brauchen wir für den sicheren Betrieb der Website. Sie werden nach <span class="todo">[Speicherdauer]</span> gelöscht.</p>
-    <p>Die Website selbst setzt keine Cookies und verwendet keine Analyse- oder Werbedienste.</p>
+    <p>Die Website selbst setzt keine Cookies und verwendet keine Analyse- oder Werbedienste. Die Schriften sind auf unserem eigenen Server gespeichert; dafür wird keine Verbindung zu Dritten aufgebaut.</p>
 
     <h2>Kontakt per E-Mail oder Telefon</h2>
     <p>Wenn Sie uns schreiben oder anrufen, verwenden wir Ihre Angaben nur, um Ihre Anfrage zu beantworten. Wir geben sie nicht an Dritte weiter.</p>
@@ -37,7 +37,6 @@ if (!isset($R, $c)) {
 <?php if ($R['tour']): ?>
       <li><strong>Google Street View:</strong> Der virtuelle Rundgang durch den Laden wird von Google Maps geladen.</li>
 <?php endif; ?>
-      <li><strong>Google Fonts:</strong> Die Schriften der Website werden von Servern von Google geladen.</li>
     </ul>
     <p>Dabei erhält Google mindestens Ihre IP-Adresse sowie Angaben zu Browser und aufgerufener Seite. Google Maps kann zudem Cookies setzen. Wie Google diese Daten bearbeitet, steht in der <a href="https://policies.google.com/privacy?hl=de" target="_blank" rel="noopener noreferrer">Datenschutzerklärung von Google<span class="sr-only"> (öffnet in neuem Tab)</span></a>.</p>
 
