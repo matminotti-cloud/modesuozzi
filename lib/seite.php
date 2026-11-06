@@ -134,13 +134,18 @@ $seasonSetting = ms_str($c, 'sortiment.aktuelle_saison') ?: 'automatisch';
     background-image: repeating-linear-gradient(90deg, transparent 0 22px, var(--stripe) 22px 23px);
     color: #f4f2ee;
   }
-  .hero-grid { display: grid; grid-template-columns: 1fr 1.25fr; gap: 48px; align-items: center; min-height: min(78vh, 680px); }
-  .hero-text { padding: 72px 0; display: flex; flex-direction: column; justify-content: center; }
-  .since { font-family: "Bodoni Moda", Georgia, serif; font-style: italic; font-size: 1.15rem; color: var(--gold); margin: 0 0 20px; }
-  .hero h1 { font-size: clamp(2.6rem, 6vw, 4.6rem); letter-spacing: -.01em; }
-  .hero p.lead { font-size: 1.15rem; max-width: 34ch; color: #d6dcd8; margin: 24px 0 36px; }
-  .cta { display: flex; flex-wrap: wrap; gap: 14px; }
-  .btn { display: inline-block; text-decoration: none; padding: 13px 24px; border-radius: 2px; font-weight: 500; }
+  /* Höhen so bemessen, dass beide Buttons auch bei 1366×768 und 963×666 ohne Scrollen sichtbar sind */
+  .hero-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: center; min-height: min(72vh, 640px); padding-block: clamp(28px, 5vh, 56px); }
+  .hero-text { display: flex; flex-direction: column; justify-content: center; }
+  .since { font-family: "Bodoni Moda", Georgia, serif; font-style: italic; font-size: 1.15rem; color: var(--gold); margin: 0 0 16px; }
+  .hero h1 { font-size: clamp(2.4rem, min(5.4vw, 8.5vh), 4.6rem); letter-spacing: -.01em; }
+  .hero p.lead { font-size: 1.15rem; max-width: 34ch; color: #d6dcd8; margin: 20px 0 28px; }
+  .cta { display: flex; flex-wrap: wrap; align-items: stretch; gap: 12px; }
+  .btn {
+    display: inline-flex; flex-direction: column; justify-content: center; align-items: center; min-height: 48px;
+    text-decoration: none; padding: 10px 20px; border-radius: 2px; font-weight: 500; font-size: .95rem; line-height: 1.3; white-space: nowrap;
+  }
+  .btn small { font-size: .8rem; font-weight: 400; opacity: .85; letter-spacing: .01em; }
   .btn-light { background: var(--gold); color: var(--brand-deep); }
   .btn-light:hover { background: #c4ab5f; }
   .btn-ghost { border: 1px solid rgba(176, 151, 76, .6); color: #f4f2ee; }
@@ -156,9 +161,13 @@ $seasonSetting = ms_str($c, 'sortiment.aktuelle_saison') ?: 'automatisch';
   .window-note .note-title { font-family: "Bodoni Moda", Georgia, serif; font-style: italic; font-size: 1.15rem; color: var(--gold); padding: 8px 0; }
   .window-note a { display: inline-flex; align-items: center; min-height: 44px; color: #f4f2ee; text-decoration: underline; text-decoration-color: rgba(176, 151, 76, .6); text-underline-offset: 4px; }
   .window-note a:hover { color: var(--gold); text-decoration-color: currentColor; }
+  @media (max-width: 600px) {
+    .cta { flex-direction: column; }
+    .btn { width: 100%; }
+  }
   @media (max-width: 860px) {
-    .hero-grid { grid-template-columns: 1fr; gap: 0; min-height: 0; }
-    .hero-text { padding: 56px 0 40px; }
+    .hero-grid { grid-template-columns: 1fr; gap: 0; min-height: 0; padding-block: 0; }
+    .hero-text { padding: 48px 0 36px; }
     .hero-img { margin: 0 -24px; padding-bottom: 8px; }
     .hero-img img { border-radius: 0; }
     .window-note { margin: 0; padding: 6px 24px 0; border-top: 0; }
@@ -269,7 +278,7 @@ $seasonSetting = ms_str($c, 'sortiment.aktuelle_saison') ?: 'automatisch';
         <div class="cta">
           <a class="btn btn-light" href="#besuch">Öffnungszeiten &amp; Anfahrt</a>
 <?php if ($R['tel']): ?>
-          <a class="btn btn-ghost" href="tel:<?= ms_e($R['tel']) ?>"><?= $t('besuch.telefon') ?> anrufen</a>
+          <a class="btn btn-ghost" href="tel:<?= ms_e($R['tel']) ?>"><span>Anrufen</span><small><?= $t('besuch.telefon') ?></small></a>
 <?php endif; ?>
         </div>
       </div>
