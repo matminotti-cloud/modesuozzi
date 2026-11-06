@@ -13,11 +13,11 @@
 <meta property="og:title" content="Mode Suozzi – Herrenmode am Sternenplatz in Uster">
 <meta property="og:description" content="Mode Suozzi, Zentralstrasse 1, 8610 Uster: italienische Herrenmode seit 55 Jahren. Anzüge, Hemden, Strick, Jeans und Schuhe von Pal Zileri, Paul &amp; Shark, Gran Sasso, Trussardi und mehr.">
 <meta property="og:url" content="https://www.modesuozzi.ch/">
-<meta property="og:image" content="https://www.modesuozzi.ch/images/schaufenster-abend.webp">
-<meta property="og:image:alt" content="Beleuchtetes Schaufenster von Mode Suozzi am Abend, mit Anzügen, Jacken und Schuhen">
+<meta property="og:image" content="https://www.modesuozzi.ch/images/laden-tag.webp">
+<meta property="og:image:alt" content="Ladenfront von Mode Suozzi mit grünem Vordach an der Ecke Zentralstrasse">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#273837">
-<meta name="build" content="44dfa78666b91e70">
+<meta name="build" content="3eec848b2c0cb160">
 <link rel="icon" href="images/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,8 +34,8 @@
             "description": "Mode Suozzi, Zentralstrasse 1, 8610 Uster: italienische Herrenmode seit 55 Jahren. Anzüge, Hemden, Strick, Jeans und Schuhe von Pal Zileri, Paul & Shark, Gran Sasso, Trussardi und mehr.",
             "logo": "https://www.modesuozzi.ch/images/logo.png",
             "image": [
-                "https://www.modesuozzi.ch/images/schaufenster-abend.webp",
-                "https://www.modesuozzi.ch/images/laden-tag.webp"
+                "https://www.modesuozzi.ch/images/laden-tag.webp",
+                "https://www.modesuozzi.ch/images/schaufenster-abend.webp"
             ],
             "telephone": "+41449408721",
             "faxNumber": "+41449408980",
@@ -165,6 +165,10 @@
   :root {
     --brand: #273837;
     --gold: #b0974c;
+    /* Gold für Text auf dunklem Grün. #b0974c erreicht auf #273837 nur 4,32:1 (zu wenig für WCAG AA).
+       #ccb46a (gleicher Farbton, heller), nach der WCAG-Formel berechnet: 6,04:1 auf --brand #273837,
+       5,27:1 auf den Nadelstreifen im Titelbereich, 7,37:1 auf --brand-deep #1c2928 (Fusszeile). */
+    --gold-on-dark: #ccb46a;
     --brand-deep: #1c2928;
     --chalk: #fbfaf8;
     --paper: #ffffff;
@@ -215,17 +219,33 @@
   .bar { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 76px; }
   .logo { display: flex; align-items: center; text-decoration: none; }
   .logo img { height: 52px; width: auto; }
-  .logo span { font-family: "Bodoni Moda", Georgia, serif; font-size: 1.5rem; color: var(--gold); }
+  .logo span { font-family: "Bodoni Moda", Georgia, serif; font-size: 1.5rem; color: var(--gold-on-dark); }
+  nav { margin-left: auto; }
   nav ul { list-style: none; display: flex; gap: 28px; margin: 0; padding: 0; }
   nav a { text-decoration: none; font-size: .95rem; color: #d6dcd8; padding: 6px 0; border-bottom: 1px solid transparent; }
-  nav a:hover { color: var(--gold); border-bottom-color: var(--gold); }
-  .menu-btn { display: none; background: none; border: 1px solid rgba(176, 151, 76, .5); color: var(--gold); font: inherit; padding: 6px 14px; border-radius: 2px; cursor: pointer; }
-  @media (max-width: 760px) {
+  nav a:hover, nav a[aria-current="true"] { color: var(--gold-on-dark); border-bottom-color: var(--gold-on-dark); }
+  .bar-end { display: flex; align-items: center; gap: 10px; }
+  .call-btn {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; white-space: nowrap;
+    border: 1px solid rgba(204, 180, 106, .65); border-radius: 2px; color: var(--gold-on-dark);
+    text-decoration: none; font-weight: 500; font-size: .95rem;
+  }
+  .call-btn:hover { background: var(--gold); border-color: var(--gold); color: var(--brand-deep); }
+  .call-btn svg { width: 16px; height: 16px; flex: none; }
+  .menu-btn { display: none; min-height: 44px; background: none; border: 1px solid rgba(176, 151, 76, .5); color: var(--gold-on-dark); font: inherit; padding: 6px 14px; border-radius: 2px; cursor: pointer; }
+  @media (max-width: 900px) {
     .menu-btn { display: block; }
     nav { position: absolute; left: 0; right: 0; top: 100%; background: var(--brand); border-bottom: 1px solid rgba(176, 151, 76, .35); display: none; }
     nav.open { display: block; }
     nav ul { flex-direction: column; gap: 0; padding: 8px 24px 16px; }
     nav a { display: block; padding: 12px 0; font-size: 1.05rem; }
+    .logo { margin-right: auto; }
+  }
+  @media (max-width: 400px) {
+    .bar { gap: 10px; }
+    .logo img { height: 44px; }
+    .call-btn { padding: 0 12px; }
+    .menu-btn { padding: 6px 12px; }
   }
 
   /* Hero: pinstripe cloth */
@@ -234,30 +254,46 @@
     background-image: repeating-linear-gradient(90deg, transparent 0 22px, var(--stripe) 22px 23px);
     color: #f4f2ee;
   }
-  .hero-grid { display: grid; grid-template-columns: 1fr 1.25fr; gap: 48px; align-items: center; min-height: min(78vh, 680px); }
-  .hero-text { padding: 72px 0; display: flex; flex-direction: column; justify-content: center; }
-  .since { font-family: "Bodoni Moda", Georgia, serif; font-style: italic; font-size: 1.15rem; color: var(--gold); margin: 0 0 20px; }
-  .hero h1 { font-size: clamp(2.6rem, 6vw, 4.6rem); letter-spacing: -.01em; }
-  .hero p.lead { font-size: 1.15rem; max-width: 34ch; color: #d6dcd8; margin: 24px 0 36px; }
-  .cta { display: flex; flex-wrap: wrap; gap: 14px; }
-  .btn { display: inline-block; text-decoration: none; padding: 13px 24px; border-radius: 2px; font-weight: 500; }
+  /* Höhen so bemessen, dass beide Buttons auch bei 1366×768 und 963×666 ohne Scrollen sichtbar sind */
+  .hero-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: center; min-height: min(72vh, 640px); padding-block: clamp(28px, 5vh, 56px); }
+  .hero-text { display: flex; flex-direction: column; justify-content: center; }
+  .since { font-family: "Bodoni Moda", Georgia, serif; font-style: italic; font-size: 1.15rem; color: var(--gold-on-dark); margin: 0 0 16px; }
+  .hero h1 { font-size: clamp(2.4rem, min(5.4vw, 8.5vh), 4.6rem); letter-spacing: -.01em; }
+  .hero p.lead { font-size: 1.15rem; max-width: 34ch; color: #d6dcd8; margin: 20px 0 28px; }
+  .cta { display: flex; flex-wrap: wrap; align-items: stretch; gap: 12px; }
+  .btn {
+    display: inline-flex; flex-direction: column; justify-content: center; align-items: center; min-height: 48px;
+    text-decoration: none; padding: 10px 20px; border-radius: 2px; font-weight: 500; font-size: .95rem; line-height: 1.3; white-space: nowrap;
+  }
+  .btn small { font-size: .8rem; font-weight: 400; opacity: .85; letter-spacing: .01em; }
+  .hero .status { color: #d6dcd8; margin-top: 18px; }
+  .hero .status::before { background: #9aa59f; }
+  .hero .status.open::before { background: #5fd38d; box-shadow: 0 0 0 3px rgba(95, 211, 141, .22); }
   .btn-light { background: var(--gold); color: var(--brand-deep); }
   .btn-light:hover { background: #c4ab5f; }
   .btn-ghost { border: 1px solid rgba(176, 151, 76, .6); color: #f4f2ee; }
-  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
-  .hero-img { position: relative; margin-bottom: 64px; }
-  .hero-img img { display: block; width: 100%; height: auto; aspect-ratio: 1600 / 1143; object-fit: cover; object-position: center; }
+  .btn-ghost:hover { border-color: var(--gold-on-dark); color: var(--gold-on-dark); }
+  .hero-img { margin: 0; }
+  /* Querformat 16:9 (Tagesfoto der Ladenfront); Ausschnitt leicht nach oben, damit Vordach und Schrift im Bild bleiben */
+  .hero-img img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; object-position: 50% 40%; border-radius: 2px; }
+  /* Hinweis unter dem Bild (Bildunterschrift statt Aufkleber auf dem Foto) */
   .window-note {
-    position: absolute; left: -24px; bottom: -64px; max-width: 300px; box-shadow: 0 8px 24px rgba(0, 0, 0, .25);
-    background: var(--gold); color: var(--brand-deep); padding: 14px 18px; border-radius: 2px;
-    font-family: "Bodoni Moda", Georgia, serif; font-size: 1.1rem; line-height: 1.3;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 20px;
+    margin-top: 12px; padding-top: 4px; border-top: 1px solid rgba(176, 151, 76, .35); color: #d6dcd8; font-size: .95rem;
   }
-  .window-note small { display: block; font-family: "Jost", Arial, sans-serif; font-size: .85rem; opacity: .85; margin-top: 4px; }
+  .window-note .note-title { font-family: "Bodoni Moda", Georgia, serif; font-style: italic; font-size: 1.15rem; color: var(--gold-on-dark); padding: 8px 0; }
+  .window-note a { display: inline-flex; align-items: center; min-height: 44px; color: #f4f2ee; text-decoration: underline; text-decoration-color: rgba(176, 151, 76, .6); text-underline-offset: 4px; }
+  .window-note a:hover { color: var(--gold-on-dark); text-decoration-color: currentColor; }
+  @media (max-width: 600px) {
+    .cta { flex-direction: column; }
+    .btn { width: 100%; }
+  }
   @media (max-width: 860px) {
-    .hero-grid { grid-template-columns: 1fr; gap: 0; min-height: 0; }
-    .hero-text { padding: 56px 0 40px; }
-    .hero-img { margin: 0 -24px; }
-    .window-note { position: static; max-width: none; border-radius: 0; box-shadow: none; padding: 14px 24px; }
+    .hero-grid { grid-template-columns: 1fr; gap: 0; min-height: 0; padding-block: 0; }
+    .hero-text { padding: 48px 0 36px; }
+    .hero-img { margin: 0 -24px; padding-bottom: 8px; }
+    .hero-img img { border-radius: 0; }
+    .window-note { margin: 0; padding: 6px 24px 0; border-top: 0; }
   }
 
   /* Sections */
@@ -311,8 +347,9 @@
   .hours th, .hours td { text-align: left; font-weight: 400; padding: 8px 0; border-top: 1px solid var(--line); vertical-align: top; }
   .hours td { text-align: right; color: var(--muted); }
   .hours tr.today th, .hours tr.today td { color: var(--ink); font-weight: 500; }
-  .status { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; font-size: .95rem; }
-  .status::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--pin); }
+  .status { display: inline-flex; align-items: center; gap: 8px; margin: 16px 0 0; font-size: .95rem; }
+  .status[hidden] { display: none; }
+  .status::before { content: ""; flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--pin); }
   .status.open::before { background: #3c8a5a; }
   .map { border: 1px solid var(--line); min-height: 300px; overflow: hidden; border-radius: 2px; }
   .map iframe { width: 100%; height: 100%; min-height: 300px; border: 0; display: block; }
@@ -326,19 +363,18 @@
 
   footer { background: var(--brand-deep); color: #b7c0bc; padding: 40px 0; font-size: .9rem; }
   footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
-  footer a { color: var(--gold); }
+  footer a { color: var(--gold-on-dark); }
 
   .about .text p + p { margin-top: 0; }
 </style>
 </head>
-<body>
+<body data-saison="automatisch">
 
 <header>
   <div class="wrap bar">
     <a class="logo" href="#top" aria-label="Mode Suozzi, zum Seitenanfang">
       <img src="images/logo.png" alt="Mode Suozzi" width="838" height="448">
     </a>
-    <button class="menu-btn" aria-expanded="false" aria-controls="nav">Menü</button>
     <nav id="nav" aria-label="Hauptnavigation">
       <ul>
         <li><a href="#sortiment">Sortiment</a></li>
@@ -348,6 +384,10 @@
         <li><a href="#besuch">Besuch</a></li>
       </ul>
     </nav>
+    <div class="bar-end">
+      <a class="call-btn" href="tel:+41449408721" aria-label="Anrufen: +41 (0) 44 940 87 21"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>Anrufen</a>
+      <button class="menu-btn" aria-expanded="false" aria-controls="nav">Menü</button>
+    </div>
   </div>
 </header>
 
@@ -360,13 +400,17 @@
         <p class="lead">Anzüge, Hemden, Strick und Schuhe von ausgewählten Marken – mit persönlicher Beratung im Familiengeschäft.</p>
         <div class="cta">
           <a class="btn btn-light" href="#besuch">Öffnungszeiten &amp; Anfahrt</a>
-          <a class="btn btn-ghost" href="tel:+41449408721">+41 (0) 44 940 87 21 anrufen</a>
+          <a class="btn btn-ghost" href="tel:+41449408721"><span>Anrufen</span><small>+41 (0) 44 940 87 21</small></a>
         </div>
+        <p class="status" data-open-status hidden></p>
       </div>
-      <div class="hero-img">
-        <img src="images/schaufenster-abend.webp" alt="Beleuchtetes Schaufenster von Mode Suozzi am Abend, mit Anzügen, Jacken und Schuhen" width="1600" height="1143" fetchpriority="high">
-        <p class="window-note"><span>Beachten Sie unser Herbstfenster!</span><small>Wir freuen uns auf Ihren Besuch.</small></p>
-      </div>
+      <figure class="hero-img">
+        <img src="images/laden-tag.webp" alt="Ladenfront von Mode Suozzi mit grünem Vordach an der Ecke Zentralstrasse" width="680" height="382" fetchpriority="high">
+        <figcaption class="window-note">
+          <span class="note-title">Neu im Schaufenster: <span data-season-short>Herbst/Winter</span></span>
+          <a href="#rundgang">Laden virtuell ansehen&nbsp;<span aria-hidden="true">→</span></a>
+        </figcaption>
+      </figure>
     </div>
   </section>
 
@@ -477,14 +521,14 @@
               <tr data-tage="So" data-zeiten="geschlossen"><th scope="row">Sonntag</th><td>geschlossen</td></tr>
             </tbody>
           </table>
-          <p class="status" id="status" hidden></p>
+          <p class="status" data-open-status hidden></p>
         </div>
         <div class="map">
           <iframe src="https://www.google.com/maps?q=Mode%20Suozzi%2C%20Zentralstrasse%201%2C%208610%20Uster&amp;output=embed" title="Karte: Zentralstrasse 1, 8610 Uster" loading="lazy"></iframe>
         </div>
       </div>
       <figure class="storefront">
-        <img src="images/laden-tag.webp" alt="Ladenfront von Mode Suozzi mit grünem Vordach an der Ecke Zentralstrasse" width="680" height="382" loading="lazy" decoding="async">
+        <img src="images/schaufenster-abend.webp" alt="Mode Suozzi am Abend: grün leuchtende Schrift über dem beleuchteten Schaufenster mit Anzügen, Jacken und Schuhen" width="1600" height="1143" loading="lazy" decoding="async">
         <figcaption><strong>Das Eckhaus mit dem grünen Vordach</strong><span>Zentralstrasse 1, direkt am Sternenplatz. Am Abend erkennen Sie uns an der grün leuchtenden Schrift.</span></figcaption>
       </figure>
     </div>
@@ -501,12 +545,21 @@
 <script>
 // Inhalte stehen fertig im HTML. Das Skript ergänzt nur, was vom heutigen Datum abhängt.
 
+// Saison: März–August Frühling/Sommer, September–Februar Herbst/Winter (Monat nach Schweizer Zeit),
+// ausser in der Admin-Konsole ist eine Saison fest eingestellt.
+function currentSeason() {
+  const fixed = document.body.dataset.saison;
+  if (fixed === 'herbst_winter' || fixed === 'fruehling_sommer') return fixed;
+  const month = +new Intl.DateTimeFormat('en', { timeZone: 'Europe/Zurich', month: 'numeric' }).format(new Date());
+  return month >= 3 && month <= 8 ? 'fruehling_sommer' : 'herbst_winter';
+}
+const SEASON_SHORT = { herbst_winter: 'Herbst/Winter', fruehling_sommer: 'Frühling/Sommer' };
+document.querySelectorAll('[data-season-short]').forEach(el => { el.textContent = SEASON_SHORT[currentSeason()]; });
+
 // Sortiment: aktuelle Saison hervorheben
 const seasons = document.querySelector('.seasons');
 if (seasons) {
-  const month = new Date().getMonth() + 1;
-  let current = seasons.dataset.current;
-  if (current !== 'herbst_winter' && current !== 'fruehling_sommer') current = month >= 3 && month <= 8 ? 'fruehling_sommer' : 'herbst_winter';
+  const current = currentSeason();
   seasons.querySelectorAll('.season').forEach(art => {
     const key = art.dataset.season, isNow = key === current;
     art.classList.toggle('off', !isNow);
@@ -514,27 +567,94 @@ if (seasons) {
   });
 }
 
-// Öffnungszeiten: heutigen Tag markieren, "Jetzt geöffnet" / "Zurzeit geschlossen"
+// Öffnungszeiten (aus content/site.json): Index 0 = Sonntag … 6 = Samstag
+const OPENING_HOURS = [[],[["09:00","12:00"],["14:00","18:30"]],[["09:00","12:00"],["14:00","18:30"]],[["09:00","12:00"],["14:00","18:30"]],[["09:00","12:00"],["14:00","18:30"]],[["09:00","12:00"],["14:00","18:30"]],[["08:30","16:00"]]];
+// Feiertage, an denen der Laden geschlossen bleibt (ISO-Datum JJJJ-MM-TT), z. B.:
+//   '2026-12-25', // Weihnachten
+//   '2026-12-26', // Stephanstag
+const HOLIDAYS = [
+];
 const DAYS = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
-const parts = new Intl.DateTimeFormat('de-CH', { timeZone: 'Europe/Zurich', weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date());
-const today = DAYS.indexOf(parts.find(p => p.type === 'weekday').value.slice(0, 2));
-const now = +parts.find(p => p.type === 'hour').value * 60 + +parts.find(p => p.type === 'minute').value;
-const toMin = s => { const [h, m] = s.split(/[:.]/).map(Number); return h * 60 + (m || 0); };
-let open = false;
-document.querySelectorAll('#hours tr').forEach(tr => {
-  if (!tr.dataset.tage.split(' ').map(d => DAYS.indexOf(d)).includes(today)) return;
-  tr.classList.add('today');
-  const slots = [...tr.dataset.zeiten.matchAll(/(\d{1,2}[:.]\d{2})\s*[–—-]\s*(\d{1,2}[:.]\d{2})/g)];
-  if (slots.some(m => now >= toMin(m[1]) && now < toMin(m[2]))) open = true;
-});
-const st = document.getElementById('status');
-if (document.querySelector('#hours tr')) { st.hidden = false; st.textContent = open ? 'Jetzt geöffnet' : 'Zurzeit geschlossen'; st.classList.toggle('open', open); }
+const DAY_NAMES = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+const toMin = s => { const [h, m] = s.split(':').map(Number); return h * 60 + m; };
+
+// Datum und Uhrzeit in Zürich, unabhängig von der Zeitzone des Geräts
+function zurichNow(date = new Date()) {
+  const p = {};
+  new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Zurich', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', hourCycle: 'h23' })
+    .formatToParts(date).forEach(x => { p[x.type] = +x.value; });
+  const day = Date.UTC(p.year, p.month - 1, p.day);
+  return { day, weekday: new Date(day).getUTCDay(), minutes: (p.hour % 24) * 60 + p.minute };
+}
+
+// Zeitfenster eines Tages (offset 0 = heute, 1 = morgen …), an Feiertagen keine
+function slotsOn(z, offset) {
+  const d = new Date(z.day + offset * 864e5);
+  return HOLIDAYS.includes(d.toISOString().slice(0, 10)) ? [] : (OPENING_HOURS[d.getUTCDay()] || []);
+}
+
+// Gemeinsame Logik für die Anzeige im Titelbereich und bei «Besuch»
+function openingStatus(date = new Date()) {
+  const z = zurichNow(date);
+  const today = slotsOn(z, 0);
+  for (let i = 0; i < today.length; i++) {
+    const [from, to] = today[i];
+    if (z.minutes < toMin(from)) {
+      return { open: false, text: i === 0 ? `Geschlossen · öffnet heute um ${from}` : `Mittagspause · öffnet um ${from}` };
+    }
+    if (z.minutes < toMin(to)) return { open: true, text: `Jetzt geöffnet · bis ${to}` };
+  }
+  for (let k = 1; k <= 14; k++) {
+    const next = slotsOn(z, k);
+    if (next.length) {
+      const when = k === 1 ? 'morgen' : DAY_NAMES[new Date(z.day + k * 864e5).getUTCDay()];
+      return { open: false, text: `Geschlossen · öffnet ${when} um ${next[0][0]}` };
+    }
+  }
+  return { open: false, text: 'Zurzeit geschlossen' };
+}
+
+function updateOpening() {
+  const s = openingStatus();
+  document.querySelectorAll('[data-open-status]').forEach(el => {
+    el.textContent = s.text;
+    el.classList.toggle('open', s.open);
+    el.hidden = false;
+  });
+  const wd = DAYS[zurichNow().weekday];
+  document.querySelectorAll('#hours tr').forEach(tr => {
+    const isToday = tr.dataset.tage.split(' ').includes(wd);
+    tr.classList.toggle('today', isToday);
+    if (isToday) tr.setAttribute('aria-current', 'date'); else tr.removeAttribute('aria-current');
+  });
+}
+updateOpening();
+// Jede Minute aktualisieren (auf den Minutenwechsel abgestimmt) und beim Zurückkehren in den Tab
+setTimeout(() => { updateOpening(); setInterval(updateOpening, 60000); }, 60000 - Date.now() % 60000 + 50);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) updateOpening(); });
 document.getElementById('year').textContent = new Date().getFullYear();
 
 // Mobiles Menü
 const btn = document.querySelector('.menu-btn'), nav = document.getElementById('nav');
 btn.addEventListener('click', () => btn.setAttribute('aria-expanded', nav.classList.toggle('open')));
 nav.addEventListener('click', e => { if (e.target.tagName === 'A') { nav.classList.remove('open'); btn.setAttribute('aria-expanded', false); } });
+
+// Navigation: Menüpunkt des sichtbaren Abschnitts markieren (aria-current)
+const navLinks = [...nav.querySelectorAll('a[href^="#"]')];
+const navSections = navLinks.map(a => document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
+if ('IntersectionObserver' in window && navSections.length) {
+  const inView = new Set();
+  // Als sichtbar gilt der Abschnitt, der durch einen schmalen Streifen bei 40 % der Fensterhöhe läuft
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) inView.add(e.target.id); else inView.delete(e.target.id); });
+    const active = navSections.find(s => inView.has(s.id));
+    navLinks.forEach(a => {
+      if (active && a.getAttribute('href') === '#' + active.id) a.setAttribute('aria-current', 'true');
+      else a.removeAttribute('aria-current');
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  navSections.forEach(s => io.observe(s));
+}
 </script>
 </body>
 </html>
