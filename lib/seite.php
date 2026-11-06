@@ -135,16 +135,32 @@ $hasHours = (bool) array_filter($week);
   .logo { display: flex; align-items: center; text-decoration: none; }
   .logo img { height: 52px; width: auto; }
   .logo span { font-family: "Bodoni Moda", Georgia, serif; font-size: 1.5rem; color: var(--gold-on-dark); }
+  nav { margin-left: auto; }
   nav ul { list-style: none; display: flex; gap: 28px; margin: 0; padding: 0; }
   nav a { text-decoration: none; font-size: .95rem; color: #d6dcd8; padding: 6px 0; border-bottom: 1px solid transparent; }
-  nav a:hover { color: var(--gold-on-dark); border-bottom-color: var(--gold-on-dark); }
-  .menu-btn { display: none; background: none; border: 1px solid rgba(176, 151, 76, .5); color: var(--gold-on-dark); font: inherit; padding: 6px 14px; border-radius: 2px; cursor: pointer; }
-  @media (max-width: 760px) {
+  nav a:hover, nav a[aria-current="true"] { color: var(--gold-on-dark); border-bottom-color: var(--gold-on-dark); }
+  .bar-end { display: flex; align-items: center; gap: 10px; }
+  .call-btn {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; white-space: nowrap;
+    border: 1px solid rgba(204, 180, 106, .65); border-radius: 2px; color: var(--gold-on-dark);
+    text-decoration: none; font-weight: 500; font-size: .95rem;
+  }
+  .call-btn:hover { background: var(--gold); border-color: var(--gold); color: var(--brand-deep); }
+  .call-btn svg { width: 16px; height: 16px; flex: none; }
+  .menu-btn { display: none; min-height: 44px; background: none; border: 1px solid rgba(176, 151, 76, .5); color: var(--gold-on-dark); font: inherit; padding: 6px 14px; border-radius: 2px; cursor: pointer; }
+  @media (max-width: 900px) {
     .menu-btn { display: block; }
     nav { position: absolute; left: 0; right: 0; top: 100%; background: var(--brand); border-bottom: 1px solid rgba(176, 151, 76, .35); display: none; }
     nav.open { display: block; }
     nav ul { flex-direction: column; gap: 0; padding: 8px 24px 16px; }
     nav a { display: block; padding: 12px 0; font-size: 1.05rem; }
+    .logo { margin-right: auto; }
+  }
+  @media (max-width: 400px) {
+    .bar { gap: 10px; }
+    .logo img { height: 44px; }
+    .call-btn { padding: 0 12px; }
+    .menu-btn { padding: 6px 12px; }
   }
 
   /* Hero: pinstripe cloth */
@@ -274,7 +290,6 @@ $hasHours = (bool) array_filter($week);
     <a class="logo" href="#top" aria-label="<?= $t('besuch.firma') ?>, zum Seitenanfang">
       <img src="images/logo.png" alt="<?= $t('besuch.firma') ?>"<?= ms_size_attr($R['root'], 'images/logo.png') ?>>
     </a>
-    <button class="menu-btn" aria-expanded="false" aria-controls="nav">Menü</button>
     <nav id="nav" aria-label="Hauptnavigation">
       <ul>
         <li><a href="#sortiment"><?= $t('sortiment.titel') ?: 'Sortiment' ?></a></li>
@@ -286,6 +301,12 @@ $hasHours = (bool) array_filter($week);
         <li><a href="#besuch"><?= $t('besuch.titel') ?: 'Besuch' ?></a></li>
       </ul>
     </nav>
+    <div class="bar-end">
+<?php if ($R['tel']): ?>
+      <a class="call-btn" href="tel:<?= ms_e($R['tel']) ?>" aria-label="Anrufen: <?= $t('besuch.telefon') ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>Anrufen</a>
+<?php endif; ?>
+      <button class="menu-btn" aria-expanded="false" aria-controls="nav">Menü</button>
+    </div>
   </div>
 </header>
 
@@ -551,6 +572,23 @@ document.getElementById('year').textContent = new Date().getFullYear();
 const btn = document.querySelector('.menu-btn'), nav = document.getElementById('nav');
 btn.addEventListener('click', () => btn.setAttribute('aria-expanded', nav.classList.toggle('open')));
 nav.addEventListener('click', e => { if (e.target.tagName === 'A') { nav.classList.remove('open'); btn.setAttribute('aria-expanded', false); } });
+
+// Navigation: Menüpunkt des sichtbaren Abschnitts markieren (aria-current)
+const navLinks = [...nav.querySelectorAll('a[href^="#"]')];
+const navSections = navLinks.map(a => document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
+if ('IntersectionObserver' in window && navSections.length) {
+  const inView = new Set();
+  // Als sichtbar gilt der Abschnitt, der durch einen schmalen Streifen bei 40 % der Fensterhöhe läuft
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) inView.add(e.target.id); else inView.delete(e.target.id); });
+    const active = navSections.find(s => inView.has(s.id));
+    navLinks.forEach(a => {
+      if (active && a.getAttribute('href') === '#' + active.id) a.setAttribute('aria-current', 'true');
+      else a.removeAttribute('aria-current');
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  navSections.forEach(s => io.observe(s));
+}
 </script>
 </body>
 </html>
