@@ -83,8 +83,8 @@
     background-image: repeating-linear-gradient(90deg, transparent 0 22px, var(--stripe) 22px 23px);
     color: #f4f2ee;
   }
-  .hero-grid { display: grid; grid-template-columns: 1.15fr 1fr; align-items: stretch; min-height: min(78vh, 680px); }
-  .hero-text { padding: 72px 48px 72px 0; display: flex; flex-direction: column; justify-content: center; }
+  .hero-grid { display: grid; grid-template-columns: 1fr 1.25fr; gap: 48px; align-items: center; min-height: min(78vh, 680px); }
+  .hero-text { padding: 72px 0; display: flex; flex-direction: column; justify-content: center; }
   .since { font-family: "Bodoni Moda", Georgia, serif; font-style: italic; font-size: 1.15rem; color: var(--gold); margin: 0 0 20px; }
   .hero h1 { font-size: clamp(2.6rem, 6vw, 4.6rem); letter-spacing: -.01em; }
   .hero p.lead { font-size: 1.15rem; max-width: 34ch; color: #d6dcd8; margin: 24px 0 36px; }
@@ -94,18 +94,19 @@
   .btn-light:hover { background: #c4ab5f; }
   .btn-ghost { border: 1px solid rgba(176, 151, 76, .6); color: #f4f2ee; }
   .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
-  .hero-img { position: relative; overflow: hidden; }
-  .hero-img img { width: 100%; height: 100%; object-fit: cover; object-position: 74% 60%; }
+  .hero-img { position: relative; margin-bottom: 64px; }
+  .hero-img img { display: block; width: 100%; height: auto; aspect-ratio: 1600 / 1143; object-fit: cover; object-position: center; }
   .window-note {
-    position: absolute; left: 20px; bottom: 20px; right: 20px; max-width: 300px;
+    position: absolute; left: -24px; bottom: -64px; max-width: 300px; box-shadow: 0 8px 24px rgba(0, 0, 0, .25);
     background: var(--gold); color: var(--brand-deep); padding: 14px 18px; border-radius: 2px;
     font-family: "Bodoni Moda", Georgia, serif; font-size: 1.1rem; line-height: 1.3;
   }
   .window-note small { display: block; font-family: "Jost", Arial, sans-serif; font-size: .85rem; opacity: .85; margin-top: 4px; }
   @media (max-width: 860px) {
-    .hero-grid { grid-template-columns: 1fr; min-height: 0; }
+    .hero-grid { grid-template-columns: 1fr; gap: 0; min-height: 0; }
     .hero-text { padding: 56px 0 40px; }
-    .hero-img { margin: 0 -24px; aspect-ratio: 4 / 3; }
+    .hero-img { margin: 0 -24px; }
+    .window-note { position: static; max-width: none; border-radius: 0; box-shadow: none; padding: 14px 24px; }
   }
 
   /* Sections */
