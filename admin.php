@@ -6,9 +6,11 @@
  * Voraussetzungen: PHP 7.4 oder neuer, Schreibrechte für content/, images/
  * und das Verzeichnis admin-data/ (wird beim ersten Aufruf angelegt).
  *
- * Beim ersten Aufruf wird das Passwort festgelegt. Danach liegt es als Hash
- * in admin-data/config.php. Passwort vergessen: diese Datei per FTP löschen
- * und admin.php erneut aufrufen.
+ * Beim ersten Aufruf wird ein Einrichtungscode in admin-data/setup-code.php
+ * erzeugt (nur per FTP lesbar). Mit diesem Code wird das Passwort festgelegt;
+ * danach liegt es als Hash in admin-data/config.php. Passwort vergessen:
+ * admin-data/config.php per FTP löschen und admin.php erneut aufrufen.
+ * Gesperrt nach zu vielen Fehlversuchen: admin-data/attempts.php löschen.
  */
 
 const CONTENT_FILE   = __DIR__ . '/content/site.json';
@@ -18,10 +20,13 @@ const DATA_DIR       = __DIR__ . '/admin-data';
 const BACKUP_DIR     = DATA_DIR . '/backups';
 const CONFIG_FILE    = DATA_DIR . '/config.php';
 const ATTEMPTS_FILE  = DATA_DIR . '/attempts.php';
+const LOCK_FILE      = DATA_DIR . '/lock.php';
+const SETUP_FILE     = DATA_DIR . '/setup-code.php';
 const KEEP_BACKUPS   = 30;
 const MAX_UPLOAD     = 8 * 1024 * 1024;
 const SESSION_IDLE   = 2 * 3600;
-const MAX_ATTEMPTS   = 5;
+const MAX_ATTEMPTS   = 5;    // Fehlversuche pro Adresse in 15 Minuten
+const GLOBAL_MAX     = 30;   // Fehlversuche insgesamt in 15 Minuten
 const LOCK_SECONDS   = 15 * 60;
 const MIN_PASSWORD   = 10;
 const GUARD          = "<?php exit; ?>\n"; // Dateien in admin-data/ sind nie direkt lesbar
@@ -85,7 +90,7 @@ $SCHEMA = [
         f('firma', 'Firmenname', 'string'),
         f('strasse', 'Strasse', 'string'),
         f('ort', 'PLZ und Ort', 'string'),
-        f('telefon', 'Telefon', 'string', ['help' => 'z. B. +41 44 940 87 21']),
+        f('telefon', 'Telefon', 'string', ['help' => 'z. B. +41 (0) 44 940 87 21']),
         f('fax', 'Fax (optional)', 'string'),
         f('email', 'E-Mail', 'email'),
         f('oeffnungszeiten', 'Öffnungszeiten', 'list', ['add' => 'Zeile hinzufügen', 'fields' => [
@@ -238,7 +243,27 @@ function slug($s)
 
 function client_key()
 {
-    return hash('sha256', $_SERVER['REMOTE_ADDR'] ?? 'unknown');
+    $ip = (string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+        $ip = bin2hex(substr((string) inet_pton($ip), 0, 8)) . '::/64'; // IPv6: ganzes /64-Netz zählt als eine Adresse
+    }
+    return hash('sha256', $ip);
+}
+
+/** Führt $fn unter exklusiver Dateisperre aus, damit parallele Anfragen die Zähler nicht umgehen. */
+function with_lock(callable $fn)
+{
+    $h = @fopen(LOCK_FILE, 'c');
+    if (!$h) {
+        return $fn();
+    }
+    flock($h, LOCK_EX);
+    try {
+        return $fn();
+    } finally {
+        flock($h, LOCK_UN);
+        fclose($h);
+    }
 }
 
 // ---------------------------------------------------------------- Inhalte
@@ -462,6 +487,54 @@ function save_attempts(array $a)
     protected_write(ATTEMPTS_FILE, json_encode($a));
 }
 
+/**
+ * Zählt einen Versuch, BEVOR das Passwort geprüft wird. Gibt eine Fehlermeldung
+ * zurück, wenn die Anmeldung gesperrt ist (pro Adresse oder insgesamt).
+ */
+function attempt_begin()
+{
+    return with_lock(function () {
+        $a = load_attempts();
+        $k = client_key();
+        $mine = $a[$k] ?? ['n' => 0, 't' => time()];
+        $all = $a['*'] ?? ['n' => 0, 't' => time()];
+        if ($mine['n'] >= MAX_ATTEMPTS || $all['n'] >= GLOBAL_MAX) {
+            $until = ($mine['n'] >= MAX_ATTEMPTS ? $mine['t'] : $all['t']) + LOCK_SECONDS;
+            return 'Zu viele Fehlversuche. Bitte in ' . max(1, (int) ceil(($until - time()) / 60)) . ' Minuten erneut versuchen.';
+        }
+        $a[$k] = ['n' => $mine['n'] + 1, 't' => time()];
+        $a['*'] = ['n' => $all['n'] + 1, 't' => time()];
+        save_attempts($a);
+        return null;
+    });
+}
+
+/** Nach erfolgreicher Anmeldung: den eben gezählten Versuch zurücknehmen. */
+function attempt_success()
+{
+    with_lock(function () {
+        $a = load_attempts();
+        unset($a[client_key()]);
+        if (isset($a['*'])) {
+            $a['*']['n'] = max(0, $a['*']['n'] - 1);
+        }
+        save_attempts($a);
+    });
+}
+
+/** Einrichtungscode: wird einmalig erzeugt und liegt nur auf dem Server (per FTP lesbar). */
+function setup_code()
+{
+    $code = trim((string) protected_read(SETUP_FILE));
+    if ($code === '' && is_dir(DATA_DIR)) {
+        $code = implode('-', str_split(strtoupper(bin2hex(random_bytes(8))), 4));
+        if (!protected_write(SETUP_FILE, $code . "\n")) {
+            return null;
+        }
+    }
+    return $code === '' ? null : $code;
+}
+
 function load_config()
 {
     $c = json_decode((string) protected_read(CONFIG_FILE), true);
@@ -533,12 +606,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 if ($action === 'setup' && !$config) {
     $pw = (string) ($_POST['password'] ?? '');
-    $err = check_new_password($pw, (string) ($_POST['password2'] ?? ''));
-    if ($err) {
+    $code = setup_code();
+    $given = strtoupper((string) preg_replace('/[^A-Za-z0-9]/', '', (string) ($_POST['code'] ?? '')));
+    if ($lock = attempt_begin()) {
+        $errors[] = $lock;
+    } elseif ($code === null || !hash_equals(str_replace('-', '', $code), $given)) {
+        sleep(1);
+        $errors[] = 'Der Einrichtungscode ist falsch.';
+    } elseif ($err = check_new_password($pw, (string) ($_POST['password2'] ?? ''))) {
+        attempt_success();
         $errors[] = $err;
-    } elseif (!is_dir(DATA_DIR) || !save_password($pw)) {
+    } elseif (!save_password($pw)) {
         $errors[] = 'Das Passwort konnte nicht gespeichert werden: Der Ordner admin-data/ ist auf dem Server nicht beschreibbar.';
     } else {
+        attempt_success();
+        @unlink(SETUP_FILE);
         session_regenerate_id(true);
         $_SESSION['auth'] = true;
         $_SESSION['last'] = time();
@@ -548,15 +630,10 @@ if ($action === 'setup' && !$config) {
 }
 
 if ($action === 'login' && $config) {
-    $attempts = load_attempts();
-    $key = client_key();
-    $entry = $attempts[$key] ?? ['n' => 0, 't' => time()];
-    if ($entry['n'] >= MAX_ATTEMPTS) {
-        $wait = (int) ceil(($entry['t'] + LOCK_SECONDS - time()) / 60);
-        $errors[] = "Zu viele Fehlversuche. Bitte in $wait Minuten erneut versuchen.";
+    if ($lock = attempt_begin()) {
+        $errors[] = $lock;
     } elseif (password_verify((string) ($_POST['password'] ?? ''), $config['hash'])) {
-        unset($attempts[$key]);
-        save_attempts($attempts);
+        attempt_success();
         if (password_needs_rehash($config['hash'], PASSWORD_DEFAULT)) {
             save_password((string) $_POST['password']);
         }
@@ -565,11 +642,8 @@ if ($action === 'login' && $config) {
         $_SESSION['last'] = time();
         redirect();
     } else {
-        $attempts[$key] = ['n' => $entry['n'] + 1, 't' => time()];
-        save_attempts($attempts);
         sleep(1);
-        $left = MAX_ATTEMPTS - $attempts[$key]['n'];
-        $errors[] = 'Das Passwort ist falsch.' . ($left > 0 ? '' : ' Die Anmeldung ist jetzt für 15 Minuten gesperrt.');
+        $errors[] = 'Das Passwort ist falsch.';
     }
 }
 
@@ -959,6 +1033,7 @@ $csrf = $_SESSION['csrf'];
     <?php if (!$config): ?>
       <h1>Admin einrichten</h1>
       <p class="sub">Legen Sie das Passwort für die Admin-Konsole fest.</p>
+      <?php if (setup_code() === null): ?><div class="msg err">Der Ordner admin-data/ konnte nicht angelegt werden. Bitte per FTP einen Ordner <strong>admin-data</strong> neben admin.php erstellen und beschreibbar machen.</div><?php endif; ?>
     <?php else: ?>
       <h1>Website-Inhalte</h1>
       <p class="sub">Bitte melden Sie sich an.</p>
@@ -969,7 +1044,8 @@ $csrf = $_SESSION['csrf'];
       <input type="hidden" name="csrf" value="<?= h($csrf) ?>">
       <?php if (!$config): ?>
         <input type="hidden" name="action" value="setup">
-        <div class="field"><label for="pw">Neues Passwort</label><input type="password" id="pw" name="password" minlength="<?= MIN_PASSWORD ?>" autocomplete="new-password" required autofocus><small class="help">Mindestens <?= MIN_PASSWORD ?> Zeichen.</small></div>
+        <div class="field"><label for="code">Einrichtungscode</label><input type="text" id="code" name="code" autocomplete="off" spellcheck="false" required autofocus><small class="help">Steht in der Datei <strong>admin-data/setup-code.php</strong> auf dem Server (per FTP öffnen, zweite Zeile). So kann nur jemand mit Zugang zum Server das Passwort festlegen.</small></div>
+        <div class="field"><label for="pw">Neues Passwort</label><input type="password" id="pw" name="password" minlength="<?= MIN_PASSWORD ?>" autocomplete="new-password" required><small class="help">Mindestens <?= MIN_PASSWORD ?> Zeichen.</small></div>
         <div class="field"><label for="pw2">Passwort wiederholen</label><input type="password" id="pw2" name="password2" minlength="<?= MIN_PASSWORD ?>" autocomplete="new-password" required></div>
         <button class="btn btn-primary">Passwort festlegen</button>
       <?php else: ?>

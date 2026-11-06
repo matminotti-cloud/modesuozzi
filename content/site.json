@@ -61,8 +61,8 @@
     "firma": "Mode Suozzi",
     "strasse": "Zentralstrasse 1",
     "ort": "8610 Uster",
-    "telefon": "+41 44 940 87 21",
-    "fax": "+41 44 940 89 80",
+    "telefon": "+41 (0) 44 940 87 21",
+    "fax": "+41 (0) 44 940 89 80",
     "email": "shop@modesuozzi.ch",
     "oeffnungszeiten": [
       { "bezeichnung": "Montag – Freitag", "tage": ["Mo", "Di", "Mi", "Do", "Fr"], "zeiten": "09:00–12:00, 14:00–18:30" },
