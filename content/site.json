@@ -31,13 +31,13 @@
       { "name": "Paul & Shark", "link": "https://www.paulshark.com" },
       { "name": "Gran Sasso", "link": "https://www.gransasso.com" },
       { "name": "Trussardi", "link": "https://www.trussardi.com/" },
-      { "name": "Bolzonella", "link": "http://www.bolzonella1934.it" },
+      { "name": "Bolzonella", "link": "https://www.bolzonella1934.it" },
       { "name": "Brax", "link": "https://www.brax.com/de/ch/index.html" },
-      { "name": "Aldo Brue", "link": "https://www.cityschuh.com/Herren/" },
-      { "name": "Mabrun", "link": "http://www.mabrun.it" },
-      { "name": "Green Coast", "link": "http://www.greencoast.it/" },
-      { "name": "Galizio Torresi", "link": "http://www.galiziotorresi.it" },
-      { "name": "Calpierre", "link": "http://www.calpierre.it" }
+      { "name": "Aldo Brue", "link": "https://www.cityschuh.com/Herren/", "pruefen": true },
+      { "name": "Mabrun", "link": "https://www.mabrun.it" },
+      { "name": "Green Coast", "link": "https://www.greencoast.it/" },
+      { "name": "Galizio Torresi", "link": "https://www.galiziotorresi.it" },
+      { "name": "Calpierre", "link": "https://www.calpierre.it" }
     ]
   },
   "ueber_uns": {

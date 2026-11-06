@@ -84,6 +84,7 @@ $SCHEMA = [
         f('liste', 'Marken', 'list', ['add' => 'Marke hinzufügen', 'fields' => [
             f('name', 'Name', 'string', ['required' => true]),
             f('link', 'Website (optional)', 'url'),
+            f('pruefen', 'Link noch prüfen', 'bool', ['help' => 'Markiert den Link im Quelltext als «TODO: Link prüfen», z. B. wenn er nicht auf die offizielle Website der Marke führt.']),
         ]]),
     ]],
     'ueber_uns' => ['label' => 'Über uns', 'fields' => [

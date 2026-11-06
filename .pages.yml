@@ -114,6 +114,7 @@ content:
             fields:
               - { name: name, label: Name, type: string, required: true }
               - { name: link, label: Website (optional), type: string }
+              - { name: pruefen, label: Link noch prüfen, description: Markiert den Link im Quelltext als «TODO Link prüfen»., type: boolean }
 
       - name: ueber_uns
         label: Über uns

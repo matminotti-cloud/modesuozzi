@@ -256,8 +256,10 @@ $hasHours = (bool) array_filter($week);
   .brands { display: flex; flex-wrap: wrap; gap: 6px 0; margin: 0; padding: 0; list-style: none; }
   .brands li { font-family: "Bodoni Moda", Georgia, serif; font-size: clamp(1.5rem, 3.4vw, 2.5rem); line-height: 1.35; }
   .brands li:not(:last-child)::after { content: "/"; color: var(--pin); margin: 0 .45em; font-style: italic; }
-  .brands a { text-decoration: none; }
-  .brands a:hover { color: var(--accent); }
+  .brands a { text-decoration: underline; text-decoration-color: transparent; text-decoration-thickness: 1px; text-underline-offset: .18em; transition: color .15s, text-decoration-color .15s; }
+  .brands a:hover, .brands a:focus-visible { color: var(--accent); text-decoration-color: var(--gold); }
+  .brands .ext { font-family: "Jost", system-ui, sans-serif; font-size: .45em; vertical-align: super; margin-left: .2em; color: var(--pin); }
+  .brands a:hover .ext, .brands a:focus-visible .ext { color: var(--accent); }
 
   /* Über uns */
   .about { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
@@ -421,7 +423,7 @@ $hasHours = (bool) array_filter($week);
       </div>
       <ul class="brands">
 <?php foreach (ms_list($c, 'marken.liste') as $m): $link = trim((string) ($m['link'] ?? '')); ?>
-        <li><?php if (ms_is_remote($link)): ?><a href="<?= ms_e($link) ?>" target="_blank" rel="noopener"><?= ms_e($m['name'] ?? '') ?></a><?php else: ?><?= ms_e($m['name'] ?? '') ?><?php endif; ?></li>
+        <li><?php if (ms_is_remote($link)): ?><?php if (!empty($m['pruefen'])): ?><!-- TODO: Link prüfen --><?php endif; ?><a href="<?= ms_e($link) ?>" target="_blank" rel="noopener noreferrer"><?= ms_e($m['name'] ?? '') ?><span class="ext" aria-hidden="true">↗</span><span class="sr-only"> (öffnet in neuem Tab)</span></a><?php else: ?><?= ms_e($m['name'] ?? '') ?><?php endif; ?></li>
 <?php endforeach; ?>
       </ul>
     </div>
