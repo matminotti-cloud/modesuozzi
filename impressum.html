@@ -17,7 +17,7 @@
 <meta property="og:image:alt" content="Ladenfront von Mode Suozzi mit grünem Vordach an der Ecke Zentralstrasse">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#273837">
-<meta name="build" content="8868a78d335ed176">
+<meta name="build" content="9666d009a385d52c">
 <link rel="icon" href="images/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -185,8 +185,10 @@
   .brands { display: flex; flex-wrap: wrap; gap: 6px 0; margin: 0; padding: 0; list-style: none; }
   .brands li { font-family: "Bodoni Moda", Georgia, serif; font-size: clamp(1.5rem, 3.4vw, 2.5rem); line-height: 1.35; }
   .brands li:not(:last-child)::after { content: "/"; color: var(--pin); margin: 0 .45em; font-style: italic; }
-  .brands a { text-decoration: none; }
-  .brands a:hover { color: var(--accent); }
+  .brands a { text-decoration: underline; text-decoration-color: transparent; text-decoration-thickness: 1px; text-underline-offset: .18em; transition: color .15s, text-decoration-color .15s; }
+  .brands a:hover, .brands a:focus-visible { color: var(--accent); text-decoration-color: var(--gold); }
+  .brands .ext { font-family: "Jost", system-ui, sans-serif; font-size: .45em; vertical-align: super; margin-left: .2em; color: var(--pin); }
+  .brands a:hover .ext, .brands a:focus-visible .ext { color: var(--accent); }
 
   /* Über uns */
   .about { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
@@ -210,8 +212,12 @@
   .visit p { margin: 0 0 6px; }
   .hours { width: 100%; border-collapse: collapse; }
   .hours th, .hours td { text-align: left; font-weight: 400; padding: 8px 0; border-top: 1px solid var(--line); vertical-align: top; }
+  .hours th { padding-left: 12px; box-shadow: inset 3px 0 0 transparent; }
   .hours td { text-align: right; color: var(--muted); }
-  .hours tr.today th, .hours tr.today td { color: var(--ink); font-weight: 500; }
+  .hours .slot { display: block; }
+  .hours tr.today th, .hours tr.today td { color: var(--ink); font-weight: 600; }
+  .hours tr.today th { box-shadow: inset 3px 0 0 var(--gold); }
+  .visit .fax { font-size: .85rem; color: var(--muted); }
   .status { display: inline-flex; align-items: center; gap: 8px; margin: 16px 0 0; font-size: .95rem; }
   .status[hidden] { display: none; }
   .status::before { content: ""; flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--pin); }
@@ -226,10 +232,20 @@
   @media (max-width: 960px) { .visit { grid-template-columns: 1fr 1fr; } .map { grid-column: 1 / -1; } }
   @media (max-width: 560px) { .visit { grid-template-columns: 1fr; } }
 
-  footer { background: var(--brand-deep); color: #b7c0bc; padding: 40px 0; font-size: .9rem; }
-  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
-  footer a { color: var(--gold-on-dark); }
+  footer { background: var(--brand-deep); color: #b7c0bc; padding: 48px 0 28px; font-size: .9rem; }
+  footer p { margin: 0; }
+  footer a { color: var(--gold-on-dark); text-underline-offset: .2em; }
+  footer a:hover { color: #fff; }
+  .foot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 28px 48px; }
+  .foot-title { font-family: "Bodoni Moda", Georgia, serif; font-size: 1.15rem; color: var(--gold-on-dark); margin-bottom: 8px !important; }
+  .foot-hours { margin: 0; display: grid; gap: 4px; }
+  .foot-hours div { display: flex; gap: 12px; }
+  .foot-hours dt { min-width: 3.6em; color: #d6dcd8; }
+  .foot-hours dd { margin: 0; }
+  footer .foot-grid a { display: inline-block; padding: 6px 0; }
+  .foot-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 24px; margin-top: 36px; padding-top: 18px; border-top: 1px solid rgba(255, 255, 255, .12); }
   footer .legal-links { display: flex; gap: 20px; }
+  footer .legal-links a { display: inline-block; padding: 10px 0; }
 
   .about .text p + p { margin-top: 0; }
 
@@ -311,12 +327,31 @@
 
 <footer>
   <div class="wrap">
-    <span>© <span id="year">2026</span> Mode Suozzi · Zentralstrasse 1 · 8610 Uster</span>
-    <a href="tel:+41449408721">+41 (0) 44 940 87 21</a>
-    <nav class="legal-links" aria-label="Rechtliches">
-      <a href="impressum.html" aria-current="page">Impressum</a>
-      <a href="datenschutz.html">Datenschutz</a>
-    </nav>
+    <div class="foot-grid">
+      <div>
+        <p class="foot-title">Mode Suozzi</p>
+        <p>Zentralstrasse 1<br>8610 Uster</p>
+      </div>
+      <div>
+        <p class="foot-title">Kontakt</p>
+        <p><a href="tel:+41449408721">+41 (0) 44 940 87 21</a><br><a href="mailto:shop@modesuozzi.ch">shop@modesuozzi.ch</a></p>
+      </div>
+      <div>
+        <p class="foot-title">Öffnungszeiten</p>
+        <dl class="foot-hours">
+          <div><dt>Mo–Fr</dt><dd>09:00–12:00, 14:00–18:30</dd></div>
+          <div><dt>Sa</dt><dd>08:30–16:00</dd></div>
+          <div><dt>So</dt><dd>geschlossen</dd></div>
+        </dl>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span id="year">2026</span> Mode Suozzi</span>
+      <nav class="legal-links" aria-label="Rechtliches">
+        <a href="impressum.html" aria-current="page">Impressum</a>
+        <a href="datenschutz.html">Datenschutz</a>
+      </nav>
+    </div>
   </div>
 </footer>
 
